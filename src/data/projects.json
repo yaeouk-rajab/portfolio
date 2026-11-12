@@ -1,0 +1,844 @@
+[
+  {
+    "slug": "bookslot",
+    "name": "bookslot",
+    "tagline": "Booking, deposits and no-show protection for appointment-based businesses.",
+    "summary": "A private, multi-tenant Laravel API with a Nuxt owner and customer frontend. Customers book a slot and pay a deposit through Stripe Connect; owners manage services, availability, refunds and balance charges. Tenant isolation is enforced in Postgres itself, not only in application code.",
+    "problem": "Small appointment businesses lose revenue to no-shows and double bookings. bookslot holds a slot for a short window while the deposit is paid, releases it if payment does not arrive, and makes overlapping bookings for the same staff member impossible at the database level.",
+    "highlights": [
+      "Tenant isolation through Postgres Row-Level Security, with separate runtime (RLS-subject) and migrator roles and a dedicated tenant-isolation test suite.",
+      "Double-booking of a staff member prevented by a Postgres GIST exclusion constraint on a tstzrange; the test suite deliberately never runs on SQLite.",
+      "Stripe Connect (Express) onboarding, deposits, refunds and off-session balance charges, with signed webhook handling, event dedup and idempotent processing.",
+      "Hand-built RabbitMQ transport (php-amqplib) with TTL and dead-letter delayed delivery, used to release expired deposit holds and send reminders.",
+      "Owner routes that call Stripe use a separate auth middleware so no database transaction stays open across a network call.",
+      "CI runs backend and frontend checks plus gitleaks, CodeQL and dependency scanning; Playwright E2E drives the real API."
+    ],
+    "stack": [
+      "Laravel 13",
+      "PHP 8.4",
+      "Nuxt 4",
+      "Vue 3",
+      "PostgreSQL",
+      "RabbitMQ",
+      "Redis",
+      "Stripe Connect",
+      "Pest",
+      "Playwright"
+    ],
+    "category": "web",
+    "related": [
+      "bookslot-mobile"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/bookslot",
+    "architecture": [
+      {
+        "label": "Nuxt frontend",
+        "description": "Public booking page and owner admin (services, availability, appointments, Stripe settings).",
+        "connectsTo": [
+          "Laravel API"
+        ]
+      },
+      {
+        "label": "Laravel API",
+        "description": "Sanctum cookie auth, tenant-scoped controllers, Stripe-calling routes outside any open transaction.",
+        "connectsTo": [
+          "PostgreSQL",
+          "Redis",
+          "RabbitMQ",
+          "Stripe"
+        ]
+      },
+      {
+        "label": "PostgreSQL",
+        "description": "Row-Level Security, runtime and migrator roles, GIST exclusion constraint on appointment time ranges.",
+        "connectsTo": []
+      },
+      {
+        "label": "RabbitMQ",
+        "description": "Delayed jobs through TTL and dead-letter exchange: hold expiry, reminders, webhook processing.",
+        "connectsTo": [
+          "Laravel API"
+        ]
+      },
+      {
+        "label": "Redis",
+        "description": "Cache and sessions.",
+        "connectsTo": []
+      },
+      {
+        "label": "Stripe",
+        "description": "Connect Express accounts, PaymentIntents, refunds, signed webhooks.",
+        "connectsTo": [
+          "Laravel API"
+        ]
+      }
+    ],
+    "status": "Private commercial project, not deployed publicly. Built across 40 documented sessions; no real Stripe or email/SMS provider has been used (test mode and log mailer only). The README is stale; CHANGELOG and the session handoff are current."
+  },
+  {
+    "slug": "bookslot-mobile",
+    "name": "bookslot-mobile",
+    "tagline": "Flutter customer app for booking appointments and paying a deposit.",
+    "summary": "The public, demo-facing half of the bookslot pair. It browses a seeded demo studio's services and availability, books a slot, takes a Stripe test-mode deposit and schedules a local reminder. It talks to bookslot's real public booking API, not a mock.",
+    "problem": "A booking backend needs a real client to prove its public API works end to end on a phone, without exposing any real business data.",
+    "highlights": [
+      "Pointed at bookslot's production-shaped public API with a seeded demo tenant; API base URL, tenant slug and Stripe key are build-time --dart-define values.",
+      "Stripe deposits in test mode only, via flutter_stripe.",
+      "Local appointment reminders through flutter_local_notifications; tests use a fake scheduler because the real plugin fails in plain flutter_test.",
+      "CI runs dart format, flutter analyze (zero issues required) and flutter test with coverage, plus a security workflow.",
+      "A separate Android workflow builds the app and runs the integration test on an emulator, including a reboot-survival check for reminders using a probe APK driven by adb.",
+      "Scope limits are documented: no admin features, no real push, no live Stripe credentials, no self-service cancel."
+    ],
+    "stack": [
+      "Flutter",
+      "Dart",
+      "Provider",
+      "flutter_stripe",
+      "flutter_secure_storage",
+      "flutter_local_notifications"
+    ],
+    "category": "mobile",
+    "related": [
+      "bookslot"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/bookslot-mobile",
+    "architecture": [
+      {
+        "label": "Flutter app",
+        "description": "Services list, availability, booking flow, my bookings, reminders.",
+        "connectsTo": [
+          "API client",
+          "Stripe SDK",
+          "Local notifications"
+        ]
+      },
+      {
+        "label": "API client",
+        "description": "HTTP client for bookslot's public tenant booking endpoints.",
+        "connectsTo": [
+          "bookslot API"
+        ]
+      },
+      {
+        "label": "Stripe SDK",
+        "description": "Collects the deposit in test mode.",
+        "connectsTo": [
+          "bookslot API"
+        ]
+      },
+      {
+        "label": "Local notifications",
+        "description": "Schedules reminders on the device.",
+        "connectsTo": []
+      },
+      {
+        "label": "bookslot API",
+        "description": "The Laravel backend in the paired repository.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Public demo client, MIT licensed. Unit and widget tests run in CI; the emulator integration test is not part of the default CI run."
+  },
+  {
+    "slug": "pulsewatch",
+    "name": "pulsewatch",
+    "tagline": "Self-hosted uptime, SLO and alerting service with a lightweight agent.",
+    "summary": "A Go (Gin) backend with an embedded scheduler, a SvelteKit dashboard, PostgreSQL and Redis. It checks targets, tracks incidents and error budgets, and dispatches alerts by webhook, email and mobile push. An agent covers private infrastructure by pushing telemetry through an OpenTelemetry collector.",
+    "problem": "Teams that want to know whether their infrastructure is up or breaching its error budget, without adopting a full SaaS observability platform.",
+    "highlights": [
+      "Scheduler with Postgres leasing so checks survive restarts without duplicates (ADR-0001).",
+      "Alert suppression state machine and defined webhook delivery semantics (ADR-0002, ADR-0006).",
+      "Worker-pool concurrency with context cancellation and graceful shutdown (ADR-0004).",
+      "Three dispatch channels: webhook, email, and FCM/APNs push implemented directly without vendor SDKs, verified against mocks only.",
+      "Live dashboard updates over Server-Sent Events (ADR-0010) and an AWS Lambda OTLP normalizer as an additive deployment target (ADR-0009).",
+      "Kubernetes manifests for the backend, Postgres and Redis applied to a real single-node control plane, including rolling updates; Terraform apply, cert-manager, NetworkPolicy enforcement and the frontend and collector images are documented as unverified."
+    ],
+    "stack": [
+      "Go",
+      "Gin",
+      "SvelteKit",
+      "PostgreSQL",
+      "Redis",
+      "OpenTelemetry",
+      "Kubernetes",
+      "Terraform",
+      "Docker"
+    ],
+    "category": "backend",
+    "related": [
+      "pulsewatch-mobile"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/pulsewatch",
+    "architecture": [
+      {
+        "label": "SvelteKit dashboard",
+        "description": "Operator login, live target status, incidents, device list. Proxies the backend.",
+        "connectsTo": [
+          "Go API"
+        ]
+      },
+      {
+        "label": "Go API",
+        "description": "Operator auth, target and channel CRUD, SSE feed, OTLP ingestion.",
+        "connectsTo": [
+          "PostgreSQL",
+          "Redis",
+          "Scheduler"
+        ]
+      },
+      {
+        "label": "Scheduler",
+        "description": "Embedded check runner using Postgres leases and a worker pool.",
+        "connectsTo": [
+          "PostgreSQL",
+          "Alert dispatcher"
+        ]
+      },
+      {
+        "label": "Alert dispatcher",
+        "description": "Opens incidents and sends webhook, email and push.",
+        "connectsTo": [
+          "PostgreSQL"
+        ]
+      },
+      {
+        "label": "Agent and OTel collector",
+        "description": "Pushes telemetry from private infrastructure.",
+        "connectsTo": [
+          "Go API"
+        ]
+      },
+      {
+        "label": "PostgreSQL",
+        "description": "Targets, check results, hourly rollups, incidents, channels, agents, operators.",
+        "connectsTo": []
+      },
+      {
+        "label": "Redis",
+        "description": "Supporting store for the backend.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Session 22 complete, per the README. Real FCM/APNs delivery is permanently descoped (no live credentials) and Terraform on a real cloud is unverified. AGPL-3.0."
+  },
+  {
+    "slug": "pulsewatch-mobile",
+    "name": "pulsewatch-mobile",
+    "tagline": "React Native companion app for pulsewatch with incident push and deep links.",
+    "summary": "An Expo SDK 58 app that signs in with the pulsewatch operator account, shows live target health, SLOs and incident history, and handles push notifications in foreground, background and cold-start states. A tap deep-links to the exact incident.",
+    "problem": "On-call operators need to hear about an incident the moment it opens and land on it directly.",
+    "highlights": [
+      "Registers the raw native FCM or APNs token (not an Expo push token) because the backend speaks both provider protocols directly.",
+      "expo-router deep link from a push to /targets/[targetId]/incidents/[incidentId], deduplicated by notification id.",
+      "lib/api-types.ts mirrors the backend OpenAPI schema one to one so contract drift shows up as a diff.",
+      "Jest suites cover the API client, the auth state machine and push-to-navigation, including a test that renders the production hook.",
+      "CI runs typecheck, lint, tests, gitleaks and CodeQL; npm audit goes through a script with a dated, single-advisory allowlist.",
+      "Limits stated plainly: real push delivery and killed-state launch were never verified on a physical device."
+    ],
+    "stack": [
+      "React Native",
+      "Expo SDK 58",
+      "TypeScript",
+      "expo-router",
+      "expo-notifications",
+      "Jest"
+    ],
+    "category": "mobile",
+    "related": [
+      "pulsewatch"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/pulsewatch-mobile",
+    "architecture": [
+      {
+        "label": "Expo app",
+        "description": "Server setup, login, target list, target detail, incidents, settings.",
+        "connectsTo": [
+          "API client",
+          "Push handling"
+        ]
+      },
+      {
+        "label": "API client",
+        "description": "Typed client for pulsewatch /api/v1 with cookie session auth.",
+        "connectsTo": [
+          "pulsewatch backend"
+        ]
+      },
+      {
+        "label": "Push handling",
+        "description": "Device token registration and notification-tap deep linking.",
+        "connectsTo": [
+          "pulsewatch backend"
+        ]
+      },
+      {
+        "label": "pulsewatch backend",
+        "description": "Self-hosted Go service in the paired repository.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Companion client with CI. Self-hosted server URL entered on first launch. AGPL-3.0."
+  },
+  {
+    "slug": "notifyhub",
+    "name": "notifyhub",
+    "tagline": "GraphQL notification service with live subscriptions over WebSocket.",
+    "summary": "A Node.js and Express service whose whole API is GraphQL: CRUD through queries and mutations, real-time delivery through graphql-ws subscriptions. Users create channels, subscribe, and publish notifications that reach live subscribers; an APNs channel delivers to registered iOS devices.",
+    "problem": "A single schema, auth model and transport pair for real-time notifications, instead of a REST API with a WebSocket added on the side.",
+    "highlights": [
+      "Apollo Server 5 with graphql-ws; the WebSocket server uses noServer plus a manual upgrade handler to avoid a double-close crash on shutdown (ADR-004).",
+      "Prisma 7 on PostgreSQL with a generated client and pinned matching CLI, client and adapter versions.",
+      "JWT and bcrypt auth shared across HTTP and WebSocket, with rate limits on both paths.",
+      "ApnsPushChannel implemented against the PushChannel interface, tested with a real local HTTP/2 server and throwaway EC keys.",
+      "CI runs CodeQL, dependency review and a Docker job that boots the runtime image, applies migrations and checks health, a query and SIGTERM exit.",
+      "Integration tests use a real Postgres and a real WebSocket client, run in-band."
+    ],
+    "stack": [
+      "Node.js",
+      "TypeScript",
+      "Express 5",
+      "Apollo Server 5",
+      "graphql-ws",
+      "Prisma 7",
+      "PostgreSQL",
+      "Docker",
+      "Jest"
+    ],
+    "category": "backend",
+    "related": [
+      "notifyhub-ios"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/notifyhub",
+    "architecture": [
+      {
+        "label": "GraphQL endpoint",
+        "description": "Queries and mutations over HTTP with rate limiting.",
+        "connectsTo": [
+          "Services"
+        ]
+      },
+      {
+        "label": "Subscription server",
+        "description": "graphql-ws over WebSocket with connection cap and upgrade limiter.",
+        "connectsTo": [
+          "PubSub"
+        ]
+      },
+      {
+        "label": "Services",
+        "description": "Users, channels, notifications, device tokens, push dispatch.",
+        "connectsTo": [
+          "PostgreSQL",
+          "PubSub",
+          "Push dispatcher"
+        ]
+      },
+      {
+        "label": "PubSub",
+        "description": "In-process fan-out of published notifications.",
+        "connectsTo": [
+          "Subscription server"
+        ]
+      },
+      {
+        "label": "Push dispatcher",
+        "description": "WebSocket channel plus APNs channel behind one interface.",
+        "connectsTo": [
+          "APNs"
+        ]
+      },
+      {
+        "label": "PostgreSQL",
+        "description": "Users, channels, notifications, device tokens via Prisma.",
+        "connectsTo": []
+      },
+      {
+        "label": "APNs",
+        "description": "Apple push service, reached over HTTP/2 with a signed JWT.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Complete and documented in project memory. Real APNs credentials are deliberately never present, so the APNs path is tested but not delivered to a device. MIT."
+  },
+  {
+    "slug": "notifyhub-ios",
+    "name": "notifyhub-ios",
+    "tagline": "Native SwiftUI client for notifyhub with APNs push and live subscriptions.",
+    "summary": "A Swift and SwiftUI app that signs in to notifyhub, browses and subscribes to channels, shows notifications with live GraphQL subscription updates, and registers APNs device tokens. Push taps deep-link in foreground, background and killed states.",
+    "problem": "Shows the notifyhub push contract working from the client side: token registration, rotation, revocation and routing a tap to the right channel.",
+    "highlights": [
+      "Hand-written GraphQL client over URLSession for queries, mutations and a graphql-transport-ws subscription.",
+      "Keychain-backed token storage; tests need ad-hoc signing to access the keychain.",
+      "XcodeGen project.yml generates the project; no .xcodeproj is committed.",
+      "DeepLinkCoordinator handles push routing in all three app states.",
+      "Push payload keys must match notifyhub's APNs payload builder; the contract is noted in both repos.",
+      "Only the macos-15 CI job compiles this code; a manual workflow captures a simulator screenshot."
+    ],
+    "stack": [
+      "Swift",
+      "SwiftUI",
+      "GraphQL",
+      "APNs",
+      "Keychain",
+      "XcodeGen"
+    ],
+    "category": "mobile",
+    "related": [
+      "notifyhub"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/notifyhub-ios",
+    "architecture": [
+      {
+        "label": "SwiftUI views",
+        "description": "Sign in, channels, notification list.",
+        "connectsTo": [
+          "Repositories"
+        ]
+      },
+      {
+        "label": "Repositories",
+        "description": "One struct per area wrapping GraphQLClient.",
+        "connectsTo": [
+          "GraphQL client"
+        ]
+      },
+      {
+        "label": "GraphQL client",
+        "description": "HTTP operations plus a WebSocket subscription client.",
+        "connectsTo": [
+          "notifyhub"
+        ]
+      },
+      {
+        "label": "Push layer",
+        "description": "Device token registration and DeepLinkCoordinator.",
+        "connectsTo": [
+          "Repositories",
+          "SwiftUI views"
+        ]
+      },
+      {
+        "label": "notifyhub",
+        "description": "GraphQL backend in the paired repository.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Complete. Written without a Swift compiler in the authoring sandbox, so CI on macOS is the only compile check. Real APNs delivery to a physical device is a permanent unverified limit. MIT."
+  },
+  {
+    "slug": "flexcatalog",
+    "name": "FlexCatalog",
+    "tagline": "Multi-tenant product catalog API on .NET 10 and MongoDB with event-fed search.",
+    "summary": "An ASP.NET Core API for catalogs where each product category has a different attribute shape, with structural tenant isolation and faceted search through a MongoDB aggregation pipeline. Two independent NATS consumers build an inventory read model in MongoDB and a Meilisearch full-text index.",
+    "problem": "Catalogs with very different product types do not fit one fixed relational schema, and multiple tenants must never see each other's data.",
+    "highlights": [
+      "Tenant isolation, schema and indexing, auth and faceted search each have an architecture decision record.",
+      "Search pipeline construction is internal and unit-tested as plain BsonDocument building, so no database is needed to check its shape.",
+      "Separate InventoryProjector and SearchIndexer services consume NATS domain events from a shared Contracts project.",
+      "Integration tests use Testcontainers with real MongoDB, NATS and Meilisearch; unit tests need no external service.",
+      "Three fixed bugs are documented: hosted-service lifetimes, early configuration capture, and JWT claim remapping.",
+      "Dockerfiles for the API and both worker services, and a screenshot captured from the built API against MongoDB 7."
+    ],
+    "stack": [
+      ".NET 10",
+      "ASP.NET Core",
+      "MongoDB",
+      "NATS",
+      "Meilisearch",
+      "JWT",
+      "Testcontainers",
+      "Docker"
+    ],
+    "category": "backend",
+    "related": [],
+    "repoUrl": "https://github.com/yaeouk-rajab/flexcatalog",
+    "architecture": [
+      {
+        "label": "FlexCatalog.Api",
+        "description": "Minimal API with JWT auth, tenant context, product CRUD and faceted search.",
+        "connectsTo": [
+          "MongoDB",
+          "NATS"
+        ]
+      },
+      {
+        "label": "MongoDB",
+        "description": "Tenant-scoped product and inventory collections.",
+        "connectsTo": []
+      },
+      {
+        "label": "NATS",
+        "description": "Domain event stream.",
+        "connectsTo": [
+          "InventoryProjector",
+          "SearchIndexer"
+        ]
+      },
+      {
+        "label": "InventoryProjector",
+        "description": "Independent consumer that builds the inventory read model.",
+        "connectsTo": [
+          "MongoDB"
+        ]
+      },
+      {
+        "label": "SearchIndexer",
+        "description": "Independent consumer that maps events to search documents.",
+        "connectsTo": [
+          "Meilisearch"
+        ]
+      },
+      {
+        "label": "Meilisearch",
+        "description": "Full-text search index.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Complete skill demo with seeded demo tenants. MIT. The README does not state a release tag."
+  },
+  {
+    "slug": "lexicon",
+    "name": "lexicon",
+    "tagline": "Grounded document Q&A that gives cited answers or refuses.",
+    "summary": "A FastAPI and Next.js system that answers questions only when the answer is backed by citations in the supplied documents. An independent groundedness verification call, not a similarity threshold, decides between answering and refusing. v1.0.0 is tagged.",
+    "problem": "Document Q&A that sounds confident but is wrong is costly. A feasibility spike showed similarity scores could not separate a correct answer from a topically adjacent wrong one, so refusal is enforced by a separate verification step.",
+    "highlights": [
+      "Hybrid retrieval over PostgreSQL with pgvector; retrieval recall@k is measured for real (9/9) because it never calls an LLM.",
+      "Verification call hardened against prompt injection inside passages: 18 of 18 structural containment across an 18-document adversarial corpus.",
+      "Tamper-evident audit trail (ADR-0002) and instance-level authentication (ADR-0005).",
+      "Committed, CI-gated evaluation harness with a golden dataset.",
+      "Production-shaped compose stack with non-root images and a pre-warmed embedding model; three bugs found and fixed by running it.",
+      "No LLM API key exists in the project by design (ADR-0004): all quality numbers measure the harness against a deterministic stub, and the README says so."
+    ],
+    "stack": [
+      "Python 3.12",
+      "FastAPI",
+      "Next.js 16",
+      "PostgreSQL",
+      "pgvector",
+      "Redis",
+      "MinIO",
+      "Docker"
+    ],
+    "category": "web",
+    "related": [
+      "lexicon-android"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/lexicon",
+    "architecture": [
+      {
+        "label": "Next.js frontend",
+        "description": "Sign in, corpora, upload and question form.",
+        "connectsTo": [
+          "FastAPI backend"
+        ]
+      },
+      {
+        "label": "FastAPI backend",
+        "description": "Ingestion, hybrid retrieval, generation, verification, audit trail.",
+        "connectsTo": [
+          "PostgreSQL + pgvector",
+          "Redis",
+          "MinIO",
+          "LLM client"
+        ]
+      },
+      {
+        "label": "PostgreSQL + pgvector",
+        "description": "Chunks, embeddings, corpora, audit records.",
+        "connectsTo": []
+      },
+      {
+        "label": "Redis",
+        "description": "Supporting store used by the backend.",
+        "connectsTo": []
+      },
+      {
+        "label": "MinIO",
+        "description": "S3-compatible document storage.",
+        "connectsTo": []
+      },
+      {
+        "label": "LLM client",
+        "description": "StubLLMClient by default; Anthropic client when a key is configured.",
+        "connectsTo": []
+      }
+    ],
+    "status": "v1.0.0 tagged, AGPL-3.0. Real LLM verification is permanently descoped, so answer quality has not been measured against a real model."
+  },
+  {
+    "slug": "lexicon-android",
+    "name": "lexicon-android",
+    "tagline": "Android client for lexicon with offline caching and background sync.",
+    "summary": "A native Kotlin and Jetpack Compose app that lists corpora and documents, asks questions and caches every answer or refusal in Room. It keeps working offline, queues questions asked without a connection and answers them with WorkManager when the network returns.",
+    "problem": "Shows offline-first mobile engineering, as opposed to another push-notification demo, against lexicon's query API.",
+    "highlights": [
+      "Room cache of corpora, documents and query results, with repository classes owning the offline and sync logic.",
+      "WorkManager worker replays the offline question queue when connectivity returns.",
+      "Cached answers are flagged possibly stale when the corpus has changed since (ADR-0003).",
+      "Online, offline and syncing state is always shown in the UI.",
+      "CI runs ktlint, unit tests and assembleDebug, plus a security workflow with osv-scanner config.",
+      "Scope is a consumer query client: no upload, ingestion or corpus administration."
+    ],
+    "stack": [
+      "Kotlin",
+      "Jetpack Compose",
+      "Room",
+      "WorkManager",
+      "Retrofit",
+      "KSP",
+      "Gradle"
+    ],
+    "category": "mobile",
+    "related": [
+      "lexicon"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/lexicon-android",
+    "architecture": [
+      {
+        "label": "Compose UI",
+        "description": "Screens and ViewModels with a connectivity banner.",
+        "connectsTo": [
+          "Repositories"
+        ]
+      },
+      {
+        "label": "Repositories",
+        "description": "CorpusRepository and QueryRepository implement offline and sync logic.",
+        "connectsTo": [
+          "Room",
+          "Retrofit API",
+          "Sync worker"
+        ]
+      },
+      {
+        "label": "Room",
+        "description": "Local cache of metadata and answers.",
+        "connectsTo": []
+      },
+      {
+        "label": "Retrofit API",
+        "description": "DTOs matching lexicon's API contract.",
+        "connectsTo": [
+          "lexicon backend"
+        ]
+      },
+      {
+        "label": "Sync worker",
+        "description": "WorkManager job that replays queued questions.",
+        "connectsTo": [
+          "Repositories"
+        ]
+      },
+      {
+        "label": "lexicon backend",
+        "description": "Self-hosted service in the paired repository.",
+        "connectsTo": []
+      }
+    ],
+    "status": "Scaffolded without Android SDK access, so the README states it was not compiled locally; CI is the build evidence. MIT."
+  },
+  {
+    "slug": "enterprise-app",
+    "name": "ProcureFlow",
+    "tagline": "Purchase requisition and approval workflow on Spring Boot and Angular.",
+    "summary": "An enterprise demo covering purchase requisition, tiered approval, purchase order and invoice with five roles. Spring Boot 4 on Java 21, an Angular 20 frontend, PostgreSQL, JWT login and OIDC single sign-on through a local Keycloak.",
+    "problem": "Shows how role-based access, a multi-step approval chain and container-first deployment fit together in a typical internal business system.",
+    "highlights": [
+      "Approval chain length depends on requisition amount (ADR 0004, tiered thresholds).",
+      "Five roles: Employee, Department Manager, Procurement Officer, Finance Approver, Admin.",
+      "Stateless JWT with BCrypt, plus Spring Security OIDC login against Keycloak, with SSO identity linking (ADR 0008).",
+      "Flyway migrations, append-only by convention; Spotless enforces formatting in mvn verify.",
+      "Testcontainers integration tests, Karma tests, multi-stage non-root Docker images.",
+      "CI has build, test, lint and image build for both sides, plus a security workflow."
+    ],
+    "stack": [
+      "Java 21",
+      "Spring Boot 4",
+      "Angular 20",
+      "PostgreSQL",
+      "Keycloak",
+      "Flyway",
+      "Testcontainers",
+      "Docker"
+    ],
+    "category": "web",
+    "related": [],
+    "repoUrl": "https://github.com/yaeouk-rajab/enterprise-app",
+    "architecture": [
+      {
+        "label": "Angular frontend",
+        "description": "Standalone components and signals; dashboards for each role.",
+        "connectsTo": [
+          "Spring Boot API"
+        ]
+      },
+      {
+        "label": "Spring Boot API",
+        "description": "Requisition workflow, approval chain, catalog, vendors, departments.",
+        "connectsTo": [
+          "PostgreSQL",
+          "Keycloak"
+        ]
+      },
+      {
+        "label": "PostgreSQL",
+        "description": "Schema managed by Flyway.",
+        "connectsTo": []
+      },
+      {
+        "label": "Keycloak",
+        "description": "Local OIDC identity provider for SSO.",
+        "connectsTo": [
+          "Spring Boot API"
+        ]
+      }
+    ],
+    "status": "Complete demo with seeded accounts. MIT. Docker-based verification relies on CI because the authoring sandbox blocked registries."
+  },
+  {
+    "slug": "privacy-forge",
+    "name": "privacy-forge",
+    "tagline": "Self-hosted consent, DSAR and data-retention engine for small SaaS teams.",
+    "summary": "A Laravel 12 and Inertia Vue application covering consent capture, the data-subject request lifecycle, retention policies, RoPA export and a tamper-evident audit log. Tagged v1.0.0 with later sessions closing remaining debt.",
+    "problem": "Small teams need a defensible answer to proving they handle personal data lawfully, without an enterprise compliance platform.",
+    "highlights": [
+      "DSAR lifecycle with staff identity verification and erasure approval by a second admin, enforced by ABAC separation of duties (ADR-0007).",
+      "Retention dry-run structurally selects the same records as a real run (ADR-0002).",
+      "Hash-chained audit log with periodic external anchoring, tested against a simulated full-chain rewrite (ADR-0003); DB-level grants revoked from the runtime role.",
+      "Fail-closed ABAC policy evaluator tested against every role and action pair (ADR-0006).",
+      "Embeddable consent widget proven on a third-party static HTML page; RoPA export as CSV and PDF.",
+      "Regulatory traceability from GDPR article to requirement to test; a Laravel version governance incident is written up in the case study."
+    ],
+    "stack": [
+      "Laravel 12",
+      "Vue 3",
+      "Inertia",
+      "PostgreSQL",
+      "Redis",
+      "S3-compatible storage",
+      "Pest",
+      "Docker"
+    ],
+    "category": "web",
+    "related": [
+      "laravel-consent-guard"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/privacy-forge",
+    "architecture": [
+      {
+        "label": "Vue and Inertia UI",
+        "description": "Staff DSAR queue, retention, RoPA and audit log; public intake portal.",
+        "connectsTo": [
+          "Laravel app"
+        ]
+      },
+      {
+        "label": "Consent widget",
+        "description": "Embeddable script for third-party pages.",
+        "connectsTo": [
+          "Laravel app"
+        ]
+      },
+      {
+        "label": "Laravel app",
+        "description": "ABAC evaluator, DSAR workflow, retention runner, audit logger.",
+        "connectsTo": [
+          "PostgreSQL",
+          "Redis",
+          "Object storage",
+          "Connectors"
+        ]
+      },
+      {
+        "label": "PostgreSQL",
+        "description": "Application data and the hash-chained audit table, with role-level privileges.",
+        "connectsTo": []
+      },
+      {
+        "label": "Object storage",
+        "description": "Export bundles delivered by short-lived signed URLs.",
+        "connectsTo": []
+      },
+      {
+        "label": "Connectors",
+        "description": "Webhook contract for dispatching erasure and export to other systems (ADR-0004).",
+        "connectsTo": [
+          "Laravel app"
+        ]
+      },
+      {
+        "label": "Redis",
+        "description": "Queues and cache.",
+        "connectsTo": []
+      }
+    ],
+    "status": "v1.0.0 tagged. Browser-driven end-to-end tests hang on Docker-launched Chromium on the authoring host (R-08, accepted); the UI was verified by an HTTP walkthrough and real screenshots."
+  },
+  {
+    "slug": "laravel-consent-guard",
+    "name": "laravel-consent-guard",
+    "tagline": "Laravel package for consent tracking and a tamper-evident audit log.",
+    "summary": "A reusable package installed with composer require. It provides a hash-chained audit log for any Eloquent model and a fail-closed consent guard with a cast, middleware and a retention-sweep Artisan command. It is tested against a Laravel and PHP version matrix.",
+    "problem": "Apps need consent checks and tamper-evident audit logs without rebuilding the mechanism each time. This extracts and generalises privacy-forge's audit log and adds a new consent guard.",
+    "highlights": [
+      "Audit entry hash is sha256 of the previous hash plus fields, serialised with pg_advisory_xact_lock for concurrent writers.",
+      "Privilege separation through an installable Artisan command using real Postgres GRANT and REVOKE.",
+      "ConsentManager::isGranted() is the single fail-closed choke point, with fault-injection tests for the guarantee.",
+      "Supports Laravel 12 and 13 and PHP 8.2+ through illuminate components; Orchestra Testbench matrix in CI.",
+      "42 Pest tests with 103 assertions in the run captured in the README; Larastan static analysis runs in CI.",
+      "Installed with composer require into a fresh Laravel 13 app through a local path repository (it is not on Packagist yet); UPGRADE.md and semantic versioning are in place."
+    ],
+    "stack": [
+      "PHP 8.2+",
+      "Laravel 12/13",
+      "Eloquent",
+      "PostgreSQL",
+      "Pest",
+      "Larastan",
+      "Orchestra Testbench"
+    ],
+    "category": "library",
+    "related": [
+      "privacy-forge"
+    ],
+    "repoUrl": "https://github.com/yaeouk-rajab/laravel-consent-guard",
+    "architecture": [
+      {
+        "label": "Consent guard",
+        "description": "ConsentRequired cast, EnsureConsentGranted middleware, retention sweep command.",
+        "connectsTo": [
+          "ConsentManager"
+        ]
+      },
+      {
+        "label": "ConsentManager",
+        "description": "Single fail-closed decision point reading ConsentRecord.",
+        "connectsTo": [
+          "Host database"
+        ]
+      },
+      {
+        "label": "Audit log",
+        "description": "Eloquent-integrated hash-chained entries.",
+        "connectsTo": [
+          "Host database"
+        ]
+      },
+      {
+        "label": "Host database",
+        "description": "The consuming application's database. Audit log requires PostgreSQL.",
+        "connectsTo": []
+      },
+      {
+        "label": "Service provider",
+        "description": "Registers config, migrations and commands in the host app.",
+        "connectsTo": [
+          "Consent guard",
+          "Audit log"
+        ]
+      }
+    ],
+    "status": "v1.0.0 released 2026-08-23. Not yet published on Packagist; the README says so. MIT."
+  }
+]

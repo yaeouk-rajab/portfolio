@@ -1,0 +1,27 @@
+---
+interface Props {
+  id: string;
+  /** Prompt path, e.g. "~/projects" */
+  path: string;
+  /** Prompt command, e.g. "ls --featured" */
+  command?: string;
+  /** Use "h1" on pages where the section heading is the page title. */
+  as?: 'h1' | 'h2';
+}
+const { id, path, command, as: Heading = 'h2' } = Astro.props;
+const headingId = `${id}-heading`;
+---
+
+<section id={id} aria-labelledby={headingId} class="scroll-mt-4 py-12 sm:py-16">
+  <div class="mx-auto w-full max-w-5xl px-4">
+    <div class="mb-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+      <Heading id={headingId} class="prompt text-xl sm:text-2xl">
+        <span class="prompt-path">{path}</span>
+        <span class="prompt-sign" aria-hidden="true"> $</span>
+        {command && <span class="text-text"> {command}</span>}
+      </Heading>
+      <slot name="action" />
+    </div>
+    <slot />
+  </div>
+</section>

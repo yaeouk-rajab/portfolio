@@ -1,0 +1,46 @@
+---
+import type { Project } from '../lib/content';
+import TagChip from './TagChip.astro';
+
+interface Props {
+  project: Project;
+  /** Where the card links to. Defaults to the internal detail page. */
+  href?: string;
+  /** How many stack chips to show. */
+  maxTags?: number;
+  /** Heading level of the card title; use "h2" when the list sits directly under the page h1. */
+  headingLevel?: 'h2' | 'h3';
+}
+const { project, href = `/projects/${project.slug}`, maxTags = 4, headingLevel: Heading = 'h3' } = Astro.props;
+const shown = project.stack.slice(0, maxTags);
+const hidden = project.stack.length - shown.length;
+---
+
+<article
+  class="group relative flex h-full flex-col gap-3 rounded-lg border border-line bg-surface p-5 transition-colors hover:border-accent focus-within:border-accent">
+  <div class="flex items-center justify-between gap-3">
+    <TagChip label={project.category} tone="accent" />
+    <span class="font-mono text-xs text-muted" aria-hidden="true">details &rarr;</span>
+  </div>
+  <Heading class="font-mono text-lg font-semibold">
+    <a
+      href={href}
+      class="text-text no-underline after:absolute after:inset-0 after:content-[''] hover:text-accent focus-visible:outline-offset-4">
+      {project.name}
+    </a>
+  </Heading>
+  <p class="text-sm text-muted">{project.tagline}</p>
+  <ul class="flex flex-wrap gap-1.5 pt-2" aria-label="Main technologies">
+    {shown.map((tech) => <li><TagChip label={tech} /></li>)}
+    {hidden > 0 && <li><TagChip label={`+${hidden}`} /></li>}
+  </ul>
+  <p class="mt-auto pt-1">
+    <a
+      href={project.repoUrl}
+      rel="noopener noreferrer"
+      target="_blank"
+      class="link relative z-10 inline-flex min-h-11 items-center font-mono text-xs">
+      GitHub repo<span class="sr-only"> for {project.name} (opens in a new tab)</span>&nbsp;&#8599;
+    </a>
+  </p>
+</article>

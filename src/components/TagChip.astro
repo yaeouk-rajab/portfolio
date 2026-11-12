@@ -1,0 +1,15 @@
+---
+interface Props {
+  label: string;
+  /** "accent" is for categories/platforms, "default" for technologies. */
+  tone?: 'default' | 'accent';
+}
+const { label, tone = 'default' } = Astro.props;
+---
+
+<span
+  class:list={[
+    'inline-block rounded border px-2 py-0.5 font-mono text-xs leading-5',
+    tone === 'accent' ? 'border-accent text-accent' : 'border-line bg-surface-2 text-muted',
+  ]}>{label}</span
+>

@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import TagChip from '../components/TagChip.astro';
+import CategoryFilter from '../components/CategoryFilter.astro';
+import { templates } from '../lib/content';
+
+const platforms = ['web', 'mobile', 'backend', 'library'] as const;
+const options = platforms
+  .map((c) => ({ value: c, count: templates.filter((t) => t.platform === c).length }))
+  .filter((o) => o.count > 0)
+  .map((o) => ({ ...o, anchor: `plat-${o.value}` }));
+---
+
+<Base title="Templates" description={`${templates.length} starter templates by Ahmed Rajab for web, mobile, backend and library projects.`}>
+  <Section id="templates" as="h1" path="~/templates" command="ls">
+    <p class="mb-6 max-w-2xl text-muted">
+      {templates.length} starter repositories: the skeleton and tooling, without product-specific code.
+    </p>
+    <CategoryFilter label="Filter templates by platform" target="template-list" options={options} total={templates.length}>
+    <ul id="template-list" class="grid gap-4 md:grid-cols-2">
+      {
+        templates.map((t) => (
+          <li data-filter={t.platform}>
+            <article class="flex h-full flex-col gap-3 rounded-lg border border-line bg-surface p-5">
+              <div class="flex items-center justify-between gap-3">
+                <TagChip label={t.platform} tone="accent" />
+              </div>
+              <h2 class="font-mono text-lg font-semibold">{t.name}</h2>
+              <p class="text-sm text-muted">{t.description}</p>
+              <ul class="flex flex-wrap gap-1.5" aria-label="Technologies">
+                {t.stack.map((tech) => <li><TagChip label={tech} /></li>)}
+              </ul>
+              <div>
+                <h3 class="font-mono text-sm text-text">Notable features</h3>
+                <ul class="mt-2 list-disc space-y-1.5 pl-5 text-sm text-muted">
+                  {t.notableFeatures.map((f) => <li>{f}</li>)}
+                </ul>
+              </div>
+              <p class="mt-auto pt-1">
+                <a href={t.repoUrl} rel="noopener noreferrer" target="_blank" class="link inline-flex min-h-11 items-center font-mono text-sm">
+                  GitHub repo<span class="sr-only"> for {t.name} (opens in a new tab)</span>&nbsp;&#8599;
+                </a>
+              </p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+    </CategoryFilter>
+  </Section>
+</Base>

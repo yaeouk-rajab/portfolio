@@ -1,0 +1,90 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props {
+  /** Page title. Omit on the home page to use the site name alone. */
+  title?: string;
+  description?: string;
+  /** Path to an OG image under /public, e.g. "/og.png". */
+  image?: string;
+  noindex?: boolean;
+  /** og:type. Use "article" for blog posts. */
+  type?: 'website' | 'article';
+  /** ISO date for article:published_time (blog posts only). */
+  publishedTime?: Date;
+}
+
+const {
+  title,
+  description = site.description,
+  image = site.ogImage,
+  noindex = false,
+  type = 'website',
+  publishedTime,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.role}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).href : undefined;
+
+// Only real profile URLs go into structured data; disabled entries are skipped.
+const sameAs = site.social.filter((s) => s.enabled).map((s) => s.url);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.role,
+  url: new URL('/', Astro.site).href,
+  email: site.email,
+  telephone: site.phone.replace(/\s/g, ''),
+  contactPoint: [
+    { '@type': 'ContactPoint', email: site.email, telephone: site.phone.replace(/\s/g, ''), contactType: 'general' },
+    { '@type': 'ContactPoint', email: site.emailSecondary, contactType: 'general' },
+  ],
+  sameAs,
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0b0f14" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {/* A noindex page (the 404) has no URL of its own to canonicalise. */}
+    {!noindex && <link rel="canonical" href={canonical.href} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} blog`} href="/rss.xml" />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content={type} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={canonical.href} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <meta name="generator" content={Astro.generator} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <Nav />
+    <main id="main" tabindex="-1" class="flex-1 focus:outline-none">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

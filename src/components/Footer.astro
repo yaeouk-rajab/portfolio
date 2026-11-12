@@ -1,0 +1,28 @@
+---
+import { site } from '../data/site';
+import SocialLinks from './SocialLinks.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-8 border-t border-line">
+  <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-10">
+    <div class="flex flex-col gap-2">
+      <p class="prompt text-base">
+        <span class="prompt-path">~/contact</span><span class="prompt-sign" aria-hidden="true"> $</span>
+        <span class="text-text"> mail</span>
+      </p>
+      <p class="flex flex-wrap gap-x-4 font-mono text-sm">
+        <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
+        <a class="link" href={`mailto:${site.emailSecondary}`}>{site.emailSecondary}</a>
+        <a class="link" href={site.phoneHref}>{site.phone}</a>
+      </p>
+    </div>
+
+    <SocialLinks />
+
+    <p class="font-mono text-xs text-muted">
+      &copy; {year} {site.name}. Built with Astro and Tailwind CSS.
+    </p>
+  </div>
+</footer>

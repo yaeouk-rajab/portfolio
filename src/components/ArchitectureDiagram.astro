@@ -1,0 +1,112 @@
+---
+import type { ArchitectureNode } from '../lib/content';
+
+interface Props {
+  nodes: ArchitectureNode[];
+  name: string;
+}
+const { nodes, name } = Astro.props;
+
+// Layout: nodes in one column (data order), connections drawn as arcs on the
+// right. One column keeps it legible at 360px without any scripting.
+const BW = 216;
+const BH = 40;
+const GAP = 30;
+const PAD = 4;
+const FONT = 13;
+const idx = new Map(nodes.map((n, i) => [n.label, i]));
+
+interface Edge { from: number; to: number; }
+const edges: Edge[] = [];
+nodes.forEach((n, i) => {
+  for (const c of n.connectsTo) {
+    const j = idx.get(c);
+    if (j !== undefined && j !== i) edges.push({ from: i, to: j });
+  }
+});
+// Every edge has an endpoint on the right side of two boxes. Give each box one
+// slot per endpoint, ordered by the box at the other end, so arrows arriving at
+// and leaving a busy box do not stack on the same pixel.
+const slots = new Map<number, { edge: number; end: 'from' | 'to'; other: number }[]>();
+edges.forEach((e, k) => {
+  if (!slots.has(e.from)) slots.set(e.from, []);
+  if (!slots.has(e.to)) slots.set(e.to, []);
+  slots.get(e.from)!.push({ edge: k, end: 'from', other: e.to });
+  slots.get(e.to)!.push({ edge: k, end: 'to', other: e.from });
+});
+const offset = new Map<string, number>();
+for (const list of slots.values()) {
+  list.sort((a, b) => a.other - b.other || (a.end === 'from' ? -1 : 1));
+  const step = list.length > 1 ? Math.min(7, (BH - 10) / (list.length - 1)) : 0;
+  list.forEach((s, k) => offset.set(`${s.edge}-${s.end}`, (k - (list.length - 1) / 2) * step));
+}
+const cy = (i: number) => PAD + i * (BH + GAP) + BH / 2;
+
+let maxB = 0;
+const paths = edges.map((e, k) => {
+  const y1 = cy(e.from) + (offset.get(`${k}-from`) ?? 0);
+  const y2 = cy(e.to) + (offset.get(`${k}-to`) ?? 0);
+  const b = 22 + 12 * (Math.abs(e.from - e.to) - 1);
+  maxB = Math.max(maxB, b);
+  const x = PAD + BW;
+  return `M${x},${y1} C${x + b},${y1} ${x + b},${y2} ${x + 1},${y2}`;
+});
+
+const width = PAD + BW + Math.round(maxB * 0.75) + 10;
+const height = PAD * 2 + nodes.length * BH + (nodes.length - 1) * GAP;
+const uid = `arch-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+const summary = nodes
+  .map((n) => (n.connectsTo.length ? `${n.label} connects to ${n.connectsTo.join(', ')}.` : `${n.label} has no outgoing connections.`))
+  .join(' ');
+---
+
+<div class="overflow-x-auto rounded-lg border border-line bg-surface p-3" tabindex="0" role="region" aria-label={`Architecture diagram of ${name}, scrollable`}>
+  <svg
+    viewBox={`0 0 ${width} ${height}`}
+    width={width}
+    height={height}
+    role="img"
+    aria-labelledby={`${uid}-t ${uid}-d`}
+    class="mx-auto block h-auto w-full"
+    style={`max-width:${Math.round(width * 1.4)}px;min-width:${Math.min(width, 300)}px`}>
+    <title id={`${uid}-t`}>Architecture of {name}</title>
+    <desc id={`${uid}-d`}>{summary}</desc>
+    <defs>
+      <marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" class="fill-accent"></path>
+      </marker>
+    </defs>
+    {
+      paths.map((d) => (
+        <path d={d} fill="none" class="stroke-accent" stroke-width="1.5" marker-end={`url(#${uid}-arrow)`}></path>
+      ))
+    }
+    {
+      nodes.map((n, i) => (
+        <g>
+          <rect x={PAD} y={PAD + i * (BH + GAP)} width={BW} height={BH} rx="6" class="fill-surface-2 stroke-line" stroke-width="1.5"></rect>
+          <text
+            x={PAD + BW / 2}
+            y={cy(i) + FONT * 0.35}
+            text-anchor="middle"
+            font-size={FONT}
+            font-family="ui-monospace, Menlo, Consolas, monospace"
+            class="fill-text">{n.label}</text>
+        </g>
+      ))
+    }
+  </svg>
+</div>
+<dl class="mt-4 grid gap-3 text-sm">
+  {
+    nodes.map((n) => (
+      <div>
+        <dt class="font-mono font-semibold text-text">
+          {n.label}
+          {n.connectsTo.length > 0 && <span class="font-normal text-muted"> &rarr; {n.connectsTo.join(', ')}</span>}
+        </dt>
+        <dd class="text-muted">{n.description}</dd>
+      </div>
+    ))
+  }
+</dl>

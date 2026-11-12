@@ -1,0 +1,30 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  /** Extra classes for the list, e.g. spacing in a page section. */
+  class?: string;
+  /** Landmark label; must differ when two lists appear on one page (contact page + footer). */
+  label?: string;
+}
+const { class: className = '', label = 'Social profiles' } = Astro.props;
+---
+
+<nav aria-label={label} class={className}>
+  <ul class="-mx-2 flex flex-wrap gap-x-1 font-mono text-sm">
+    {
+      site.social.filter((s) => s.enabled).map((s) => (
+        <li>
+          <a
+            class="inline-flex min-h-11 items-center px-2 text-text underline decoration-1 underline-offset-4 hover:text-accent"
+            href={s.url}
+            rel="me noopener"
+            target="_blank">
+            {s.label}
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

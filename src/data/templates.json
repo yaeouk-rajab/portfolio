@@ -1,0 +1,238 @@
+[
+  {
+    "slug": "android-compose-template",
+    "name": "Android Compose Starter",
+    "description": "Jetpack Compose skeleton with Retrofit, Room, WorkManager offline queue and encrypted prefs. No domain code.",
+    "stack": [
+      "Kotlin",
+      "Jetpack Compose",
+      "Retrofit",
+      "Room",
+      "WorkManager",
+      "DataStore"
+    ],
+    "platform": "mobile",
+    "repoUrl": "https://github.com/yaeouk-rajab/android-compose-template",
+    "notableFeatures": [
+      "Offline queue with a permanent vs transient HTTP error split (401/403/422 never retried) and an attempt cap.",
+      "Hand-rolled composition root, Keystore-encrypted prefs for the auth header, and BASIC-only OkHttp logging.",
+      "Shared composables, connectivity banner and ktlint in CI."
+    ]
+  },
+  {
+    "slug": "dotnet-minimal-api-template",
+    "name": "Dotnet Minimal API Starter",
+    "description": ".NET 10 minimal API on MongoDB with JWT auth, Testcontainers tests and CI. Tenancy and worker host are optional.",
+    "stack": [
+      ".NET 10",
+      "MongoDB",
+      "JWT",
+      "Testcontainers",
+      "Docker"
+    ],
+    "platform": "backend",
+    "repoUrl": "https://github.com/yaeouk-rajab/dotnet-minimal-api-template",
+    "notableFeatures": [
+      "Startup guard refuses the dev placeholder JWT secret in Production; login is rate limited and uses one error for unknown user and wrong password.",
+      "Query-building logic is internal and unit-testable as BsonDocument construction without a database.",
+      "Optional tenancy and background worker folders, with Dockerfiles for the API and the worker."
+    ]
+  },
+  {
+    "slug": "ios-swiftui-template",
+    "name": "iOS SwiftUI Starter",
+    "description": "SwiftUI skeleton with XcodeGen, GraphQL over HTTP and WebSocket, Keychain, APNs and deep links. No dependencies.",
+    "stack": [
+      "Swift",
+      "SwiftUI",
+      "XcodeGen",
+      "GraphQL",
+      "APNs"
+    ],
+    "platform": "mobile",
+    "repoUrl": "https://github.com/yaeouk-rajab/ios-swiftui-template",
+    "notableFeatures": [
+      "GraphQL client and graphql-transport-ws subscription client on URLSession with no third-party Swift dependencies.",
+      "Keychain token storage, sign-in and register, and APNs registration with permission problems surfaced to the user.",
+      "Deep-link coordinator for push taps in all app states; project generated from project.yml and CI runs on macOS."
+    ]
+  },
+  {
+    "slug": "spring-angular-template",
+    "name": "Spring Angular Starter",
+    "description": "Spring Boot 4 API and Angular frontend with JWT, refresh tokens, optional OIDC, Flyway, and security CI.",
+    "stack": [
+      "Java 21",
+      "Spring Boot 4",
+      "Angular",
+      "PostgreSQL",
+      "Keycloak",
+      "Flyway"
+    ],
+    "platform": "web",
+    "repoUrl": "https://github.com/yaeouk-rajab/spring-angular-template",
+    "notableFeatures": [
+      "JWT access tokens plus revocable refresh tokens, optional OIDC SSO with Keycloak for local development.",
+      "Shared Angular UI component set with server-side field errors, and a rename.sh that swaps placeholders then deletes itself.",
+      "CI with secret scanning, CodeQL and dependency scanning; Spotless formatting enforced."
+    ]
+  },
+  {
+    "slug": "expo-router-template",
+    "name": "Expo Router Starter",
+    "description": "Expo SDK 58 starter with cookie-session login, push registration, deep linking and a Jest test setup.",
+    "stack": [
+      "Expo SDK 58",
+      "React Native",
+      "TypeScript",
+      "expo-router",
+      "Jest"
+    ],
+    "platform": "mobile",
+    "repoUrl": "https://github.com/yaeouk-rajab/expo-router-template",
+    "notableFeatures": [
+      "Auth state machine (bootstrapping, needs-server, signed-out, signed-in) with a user-supplied server URL.",
+      "Native FCM/APNs token registration on sign-in and tap-to-navigate for pushes carrying an in-app route.",
+      "CI also runs expo export for both platforms and an npm audit script with a dated allowlist."
+    ]
+  },
+  {
+    "slug": "fastapi-nextjs-template",
+    "name": "FastAPI Next.js Starter",
+    "description": "FastAPI and Next.js 16 starter with auth, one JSON error contract, rate limiting, Docker and CI.",
+    "stack": [
+      "FastAPI",
+      "SQLAlchemy 2",
+      "Alembic",
+      "PostgreSQL",
+      "Redis",
+      "Next.js 16"
+    ],
+    "platform": "web",
+    "repoUrl": "https://github.com/yaeouk-rajab/fastapi-nextjs-template",
+    "notableFeatures": [
+      "Single error contract for every failure, with per-field validation errors keyed by name; pagination helper that rejects bad values.",
+      "Constant-work login against a dummy hash, Redis-backed login and register rate limits, and a two-role Postgres setup.",
+      "Browser never calls the backend directly: Next.js route handlers proxy using the session cookie."
+    ]
+  },
+  {
+    "slug": "go-gin-sveltekit-template",
+    "name": "Go Gin SvelteKit Starter",
+    "description": "Go (Gin) and SvelteKit starter with operator login, JSON error contract, rate limiting, Docker and CI.",
+    "stack": [
+      "Go",
+      "Gin",
+      "pgx",
+      "golang-migrate",
+      "SvelteKit",
+      "PostgreSQL"
+    ],
+    "platform": "web",
+    "repoUrl": "https://github.com/yaeouk-rajab/go-gin-sveltekit-template",
+    "notableFeatures": [
+      "HMAC-signed session cookie auth, CSRF-style JSON content-type check and per-email and per-IP login limiter.",
+      "Pagination helper, agent credential helper and golang-migrate migrations; tests run with a real Postgres.",
+      "Optional Kubernetes, Terraform and Lambda example folders, plus Svelte 5 runes and Vitest component tests."
+    ]
+  },
+  {
+    "slug": "flutter-template",
+    "name": "Flutter Starter",
+    "description": "Flutter skeleton with API client, secure storage, local reminders, Material 3 theme and shared widgets.",
+    "stack": [
+      "Flutter",
+      "Dart",
+      "Provider",
+      "flutter_secure_storage",
+      "flutter_local_notifications"
+    ],
+    "platform": "mobile",
+    "repoUrl": "https://github.com/yaeouk-rajab/flutter-template",
+    "notableFeatures": [
+      "Typed ApiException client, Keychain/Keystore token storage and build-time config through --dart-define.",
+      "Fake secure storage and fake reminder scheduler for plain flutter_test runs.",
+      "Emulator checks: reminder delivery test and a reboot-survival script using a probe APK; CI runs analyze and format."
+    ]
+  },
+  {
+    "slug": "laravel-api-nuxt-template",
+    "name": "Laravel API Nuxt Starter",
+    "description": "Laravel 13 API with a Nuxt 4 frontend: Sanctum cookie auth, error contract, Postgres roles, Pest, Playwright.",
+    "stack": [
+      "Laravel 13",
+      "Nuxt 4",
+      "PostgreSQL",
+      "Sanctum",
+      "Pest",
+      "Playwright"
+    ],
+    "platform": "web",
+    "repoUrl": "https://github.com/yaeouk-rajab/laravel-api-nuxt-template",
+    "notableFeatures": [
+      "Sanctum SPA cookie auth with explicit-origin CORS and a runtime/migrator Postgres role split.",
+      "Optional multi-tenancy module with Row-Level Security and an optional RabbitMQ queue module with delayed delivery.",
+      "Pest, Larastan level 8, Vitest and Playwright specs against the real API, with security scanning in CI."
+    ]
+  },
+  {
+    "slug": "laravel-inertia-vue-template",
+    "name": "Laravel Inertia Vue Starter",
+    "description": "Laravel 12, Inertia, Vue 3 and Tailwind starter with session auth, error contract, widget build and CI.",
+    "stack": [
+      "Laravel 12",
+      "Inertia",
+      "Vue 3",
+      "Tailwind",
+      "PostgreSQL",
+      "Pest"
+    ],
+    "platform": "web",
+    "repoUrl": "https://github.com/yaeouk-rajab/laravel-inertia-vue-template",
+    "notableFeatures": [
+      "Rate-limited login with session regeneration and exponential lockout; one JSON error contract and Inertia error pages.",
+      "Separate Vite build for a standalone embeddable widget that imports no Inertia or Laravel assets.",
+      "Runtime/migrator Postgres roles, dev and production Docker, Larastan level 8 and Vitest."
+    ]
+  },
+  {
+    "slug": "laravel-package-template",
+    "name": "Laravel Package Starter",
+    "description": "Laravel package skeleton with provider, publishable config and migration, facade, Artisan command and CI matrix.",
+    "stack": [
+      "PHP",
+      "Laravel",
+      "Orchestra Testbench",
+      "Pest",
+      "Larastan",
+      "Pint"
+    ],
+    "platform": "library",
+    "repoUrl": "https://github.com/yaeouk-rajab/laravel-package-template",
+    "notableFeatures": [
+      "Depends on individual illuminate components and CI tests every supported PHP and Laravel combination.",
+      "Uses publishesMigrations(), a rebindable repository contract and an install command; composer.lock is intentionally not committed.",
+      "composer check runs Pint, Larastan and Pest; rename.sh swaps the placeholders."
+    ]
+  },
+  {
+    "slug": "node-graphql-template",
+    "name": "Node GraphQL Starter",
+    "description": "Express 5, Apollo Server 5, graphql-ws subscriptions, Prisma 7 on PostgreSQL and JWT auth.",
+    "stack": [
+      "Node.js",
+      "TypeScript",
+      "Apollo Server 5",
+      "graphql-ws",
+      "Prisma 7",
+      "PostgreSQL"
+    ],
+    "platform": "backend",
+    "repoUrl": "https://github.com/yaeouk-rajab/node-graphql-template",
+    "notableFeatures": [
+      "Zod-validated environment, Helmet, rate-limited /graphql, and a WebSocket upgrade rate limiter with a connection cap.",
+      "WebSocket server built with noServer and a manual upgrade handler to avoid a shutdown double-close.",
+      "Multi-stage non-root Dockerfile, CI with CodeQL and security scans, and tests against a real PostgreSQL."
+    ]
+  }
+]

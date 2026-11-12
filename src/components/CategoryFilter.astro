@@ -1,0 +1,130 @@
+---
+/**
+ * Category filter that works with and without JavaScript.
+ *
+ * Wrap the list to filter in this component (default slot). The list's <li>
+ * children carry data-filter="<value>".
+ *
+ * Without JS: each link points at an empty anchor element (#cat-web, ...) placed
+ * before the list, and CSS `:target` rules hide the non-matching items.
+ * With JS: the script marks the root with data-js (which switches the CSS rules
+ * off), filters by toggling `hidden`, and keeps the choice in `?filter=`.
+ */
+interface Props {
+  label: string;
+  /** id of the list being filtered; the "all" link points at it. */
+  target: string;
+  options: { value: string; anchor: string; count: number }[];
+  total: number;
+}
+const { label, target, options, total } = Astro.props;
+
+// Values come from the fixed category lists in the pages, so they are safe to
+// put into selectors; the regex guard keeps it that way if that ever changes.
+const safe = (s: string) => /^[a-z0-9-]+$/.test(s);
+const root = '[data-filter-root]:not([data-js])';
+const css = options
+  .filter((o) => safe(o.value) && safe(o.anchor))
+  .map(
+    (o) =>
+      `${root} > #${o.anchor}:target ~ * li[data-filter]:not([data-filter="${o.value}"]){display:none}` +
+      `${root} > #${o.anchor}:target ~ nav a[data-value="${o.value}"]{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}` +
+      `${root} > #${o.anchor}:target ~ nav a[data-value="all"]{color:var(--muted);background:transparent;border-color:var(--line)}`,
+  )
+  .join('');
+---
+
+<div data-filter-root>
+  {options.map((o) => <span id={o.anchor} class="filter-anchor" aria-hidden="true"></span>)}
+  <nav aria-label={label} class="mb-6" data-filter-nav data-target={target}>
+    <ul class="-mx-1 flex flex-wrap gap-2 font-mono text-sm">
+      <li>
+        <a href={`#${target}`} data-value="all" aria-current="true" class="filter-link">all ({total})</a>
+      </li>
+      {
+        options.map((o) => (
+          <li>
+            <a href={`#${o.anchor}`} data-value={o.value} class="filter-link">
+              {o.value} ({o.count})
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="sr-only" role="status" aria-live="polite" data-filter-status></p>
+  </nav>
+  <slot />
+</div>
+
+<style is:inline set:html={css}></style>
+
+<style>
+  .filter-anchor {
+    display: block;
+    height: 0;
+    scroll-margin-top: 1rem;
+  }
+  .filter-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding: 0 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.375rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .filter-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .filter-link[aria-current='true'] {
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-filter-root]')) {
+    const nav = root.querySelector<HTMLElement>('[data-filter-nav]');
+    const list = nav && document.getElementById(nav.dataset.target ?? '');
+    if (!nav || !list) continue;
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[data-value]')];
+    const items = [...list.children] as HTMLElement[];
+    const status = nav.querySelector<HTMLElement>('[data-filter-status]');
+    const known = new Set(links.map((a) => a.dataset.value));
+    const byAnchor = new Map(links.map((a) => [a.getAttribute('href')?.slice(1), a.dataset.value ?? 'all']));
+
+    const apply = (value: string, announce: boolean) => {
+      let shown = 0;
+      for (const li of items) {
+        const match = value === 'all' || li.dataset.filter === value;
+        li.hidden = !match;
+        if (match) shown++;
+      }
+      for (const a of links) {
+        if (a.dataset.value === value) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      }
+      if (status && announce) status.textContent = `Showing ${shown} ${value === 'all' ? 'items' : `${value} items`}`;
+    };
+
+    // JS takes over from the :target CSS rules.
+    root.dataset.js = '';
+    for (const a of links) {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const value = a.dataset.value ?? 'all';
+        apply(value, true);
+        history.replaceState(null, '', value === 'all' ? location.pathname : `?filter=${value}`);
+      });
+    }
+
+    // Initial state: ?filter=web, or a #cat-web link shared from the no-JS version.
+    const fromQuery = new URLSearchParams(location.search).get('filter');
+    const fromHash = byAnchor.get(location.hash.slice(1));
+    const initial = fromQuery && known.has(fromQuery) ? fromQuery : fromHash;
+    if (initial && initial !== 'all') apply(initial, false);
+  }
+</script>

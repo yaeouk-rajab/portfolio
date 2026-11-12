@@ -1,0 +1,108 @@
+---
+import Base from '../../layouts/Base.astro';
+import TagChip from '../../components/TagChip.astro';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+import { projects } from '../../lib/content';
+import type { Project } from '../../lib/content';
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      prev: projects[i - 1],
+      next: projects[i + 1],
+      related: project.related
+        .map((s) => projects.find((p) => p.slug === s))
+        .filter((p): p is Project => Boolean(p)),
+    },
+  }));
+}
+
+interface Props {
+  project: Project;
+  prev?: Project;
+  next?: Project;
+  related: Project[];
+}
+const { project, prev, next, related } = Astro.props;
+---
+
+<Base title={project.name} description={project.tagline}>
+  <article class="mx-auto w-full max-w-5xl px-4 py-12 sm:py-16">
+    <nav aria-label="Breadcrumb" class="font-mono text-sm text-muted">
+      <a class="link" href="/projects">projects</a> / <span aria-current="page">{project.slug}</span>
+    </nav>
+    <header class="mt-4">
+      <TagChip label={project.category} tone="accent" />
+      <h1 class="prompt mt-3 text-3xl sm:text-4xl">{project.name}</h1>
+      <p class="mt-3 max-w-2xl text-lg text-text">{project.tagline}</p>
+      <p class="mt-4">
+        <a href={project.repoUrl} rel="noopener noreferrer" target="_blank" class="btn btn-ghost">
+          GitHub repo<span class="sr-only"> (opens in a new tab)</span>&nbsp;&#8599;
+        </a>
+      </p>
+    </header>
+
+    <section aria-labelledby="problem" class="mt-10 max-w-3xl">
+      <h2 id="problem" class="prompt text-xl"><span class="prompt-path">~/problem</span></h2>
+      <p class="mt-3">{project.problem}</p>
+      <p class="mt-3 text-muted">{project.summary}</p>
+    </section>
+
+    <section aria-labelledby="highlights" class="mt-10 max-w-3xl">
+      <h2 id="highlights" class="prompt text-xl"><span class="prompt-path">~/highlights</span></h2>
+      <ul class="mt-3 list-disc space-y-2 pl-5">
+        {project.highlights.map((h) => <li>{h}</li>)}
+      </ul>
+    </section>
+
+    <section aria-labelledby="architecture" class="mt-10 max-w-3xl">
+      <h2 id="architecture" class="prompt text-xl"><span class="prompt-path">~/architecture</span></h2>
+      <div class="mt-4">
+        <ArchitectureDiagram nodes={project.architecture} name={project.name} />
+      </div>
+    </section>
+
+    <section aria-labelledby="stack" class="mt-10">
+      <h2 id="stack" class="prompt text-xl"><span class="prompt-path">~/stack</span></h2>
+      <ul class="mt-3 flex flex-wrap gap-1.5">
+        {project.stack.map((t) => <li><TagChip label={t} /></li>)}
+      </ul>
+    </section>
+
+    <section aria-labelledby="status" class="mt-10 max-w-3xl">
+      <h2 id="status" class="prompt text-xl"><span class="prompt-path">~/status</span></h2>
+      <p class="mt-3 rounded-lg border border-warn p-4 text-sm">{project.status}</p>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section aria-labelledby="related" class="mt-10">
+          <h2 id="related" class="prompt text-xl"><span class="prompt-path">~/related</span></h2>
+          <ul class="mt-3 space-y-1">
+            {related.map((r) => (
+              <li>
+                <a class="link inline-flex min-h-11 items-center font-mono" href={`/projects/${r.slug}`}>{r.name}</a>
+                <span class="text-sm text-muted"> {r.tagline}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <nav aria-label="Previous and next project" class="mt-12 grid gap-3 border-t border-line pt-6 sm:grid-cols-2">
+      <div>
+        {prev && (
+          <a href={`/projects/${prev.slug}`} rel="prev" class="link inline-flex min-h-11 items-center font-mono">&larr; {prev.name}</a>
+        )}
+      </div>
+      <div class="sm:text-right">
+        {next && (
+          <a href={`/projects/${next.slug}`} rel="next" class="link inline-flex min-h-11 items-center font-mono">{next.name} &rarr;</a>
+        )}
+      </div>
+    </nav>
+  </article>
+</Base>

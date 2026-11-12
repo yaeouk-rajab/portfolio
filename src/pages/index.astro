@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import TemplateCard from '../components/TemplateCard.astro';
+import TagChip from '../components/TagChip.astro';
+import { site } from '../data/site';
+import { featuredProjects, featuredTemplates, projects, templates, topTechnologies } from '../lib/content';
+
+const categories = [...new Set(projects.map((p) => p.category))];
+const technologies = topTechnologies(12);
+const github = site.social.find((s) => s.label === 'GitHub');
+---
+
+<Base>
+  <!-- Hero -->
+  <section aria-labelledby="hero-heading" class="py-16 sm:py-24">
+    <div class="mx-auto w-full max-w-5xl px-4">
+      <p class="font-mono text-sm text-muted"><span aria-hidden="true">$ </span>whoami</p>
+      <h1 id="hero-heading" class="mt-3 font-mono text-4xl font-bold tracking-tight sm:text-6xl">
+        {site.name}<span class="cursor" aria-hidden="true"></span>
+      </h1>
+      <p class="mt-3 font-mono text-lg text-accent sm:text-xl">{site.role}</p>
+      <p class="mt-6 max-w-2xl text-lg text-text sm:text-xl">{site.tagline}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/projects" class="btn btn-primary">View projects</a>
+        <a href="/contact" class="btn btn-ghost">Get in touch</a>
+        {
+          github?.enabled && (
+            <a href={github.url} class="btn btn-ghost" rel="me noopener" target="_blank">
+              GitHub<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <Section id="about" path="~/about" command="cat README.md">
+    <div class="grid gap-8 md:grid-cols-[3fr_2fr]">
+      <div class="space-y-4 text-text">
+        <p>
+          The GitHub account <span class="font-mono">{site.githubUser}</span> holds {projects.length}{' '}
+          portfolio and open-source projects and {templates.length} reusable starter templates, covering {categories.join(', ')} software.
+          These are my own projects, not client deployments, and no user numbers are claimed for them.
+        </p>
+        <p>
+          On the server side that includes Laravel, Go, Node.js and GraphQL, .NET with MongoDB,
+          Java with Spring Boot and Python with FastAPI. On the client side it includes Nuxt, Vue,
+          Angular, SvelteKit and Next.js for the web, and Flutter, React Native, Kotlin with Jetpack
+          Compose, and Swift with SwiftUI for mobile.
+        </p>
+        <p>
+          Each project here says plainly what has not been verified: no live payment provider, no
+          real push-notification credentials, or CI as the only place the code was compiled. I'd
+          rather state a limit than imply a result I did not measure.
+        </p>
+        <p>{site.summary}</p>
+        <p>
+          Education: {site.education[0].title}, {site.education[0].place} ({site.education[0].period}).
+          Previously a {site.experience[0].title} at {site.experience[0].place}
+          ({site.experience[0].period}).
+        </p>
+      </div>
+      <div>
+        <h3 class="font-mono text-sm text-muted">Most frequent across the repos</h3>
+        <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Most frequent technologies">
+          {technologies.map((t) => <li><TagChip label={t.name} /></li>)}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Shipped work -->
+  <Section id="shipped" path="~/shipped" command="ls --in-production">
+    <ul class="grid gap-4 md:max-w-xl">
+      {site.shippedWork.map((w) => (
+        <li class="rounded-lg border border-line bg-surface p-5">
+          <h3 class="font-mono font-semibold">{w.name}</h3>
+          <p class="text-xs text-muted">{w.kind}</p>
+          <p class="mt-2 text-sm">{w.text}</p>
+          {w.url && (
+            <p class="mt-3 text-sm">
+              <a class="link" href={w.url} rel="noopener" target="_blank">
+                {w.linkLabel}<span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            </p>
+          )}
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- Featured projects -->
+  <Section id="projects" path="~/projects" command="ls --featured">
+    <a slot="action" href="/projects" class="link font-mono text-sm">All {projects.length} projects &rarr;</a>
+    <p class="mb-6 max-w-2xl text-muted">
+      Portfolio and open-source projects on GitHub. They are not production deployments and have no
+      user numbers; each page states what was and was not verified.
+    </p>
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {featuredProjects.map((project) => <li><ProjectCard project={project} /></li>)}
+    </ul>
+  </Section>
+
+  <!-- Templates teaser -->
+  <Section id="templates" path="~/templates" command="ls --starter-kits">
+    <a slot="action" href="/templates" class="link font-mono text-sm">All {templates.length} templates &rarr;</a>
+    <p class="mb-6 max-w-2xl text-muted">
+      Starter repositories for web, mobile, backend and library projects: the skeleton and
+      tooling, without product-specific code.
+    </p>
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {featuredTemplates.map((template) => <li><TemplateCard template={template} /></li>)}
+    </ul>
+  </Section>
+
+  <!-- Contact CTA -->
+  <Section id="contact" path="~/contact" command="mail --to ahmed">
+    <div class="rounded-lg border border-line bg-surface p-6 sm:p-8">
+      <p class="max-w-xl text-lg">
+        Have a project, a question about one of these repos, or a role to talk about? Email is the
+        best way to reach me.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-4">
+        <a href={`mailto:${site.email}`} class="btn btn-primary">Email me</a>
+        <a class="link font-mono text-sm" href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+    </div>
+  </Section>
+</Base>
