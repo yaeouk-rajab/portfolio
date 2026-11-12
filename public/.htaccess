@@ -1,0 +1,11 @@
+# Used only on Apache/LiteSpeed hosts (cPanel etc.); ignored elsewhere.
+ErrorDocument 404 /404.html
+Options -Indexes
+DirectoryIndex index.html
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+</IfModule>

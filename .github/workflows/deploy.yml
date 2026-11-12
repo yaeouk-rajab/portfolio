@@ -1,0 +1,58 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          include-hidden-files: true
+
+  deploy:
+    # Only on main, never for pull requests.
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+    steps:
+      - name: Skip when FTP secrets are not set
+        if: env.FTP_SERVER == ''
+        run: echo "FTP_SERVER secret is not set; skipping deploy. See README (Deploy)."
+      - uses: actions/download-artifact@v4
+        if: env.FTP_SERVER != ''
+        with:
+          name: site
+          path: dist
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        if: env.FTP_SERVER != ''
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
+          local-dir: ./dist/

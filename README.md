@@ -65,3 +65,21 @@ The build is plain static files in `dist/`, so any static host works.
 - **GitHub Pages:** publish `dist/` with the `withastro/action` workflow. For a project page
   (not a user/custom-domain root) also set `base` in `astro.config.mjs`.
 - `robots.txt`, `sitemap-index.xml` and `rss.xml` are generated at build time from `site`.
+
+## Deploy (FTP via GitHub Actions)
+
+`.github/workflows/deploy.yml` type-checks and builds on every push and pull request,
+and on pushes to `main` uploads `dist/` to your host over FTP. Only changed files are
+uploaded. Set these in the repo under Settings > Secrets and variables > Actions:
+
+| Name | Kind | Value |
+|---|---|---|
+| `FTP_SERVER` | secret | FTP host, e.g. `ftp.example.com` |
+| `FTP_USERNAME` | secret | FTP user |
+| `FTP_PASSWORD` | secret | FTP password |
+| `FTP_SERVER_DIR` | secret (optional) | Web root with trailing slash. Default `/public_html/` |
+| `FTP_PROTOCOL` | variable (optional) | `ftps` (default), `ftp` or `ftps-legacy` |
+
+Use a dedicated FTP account limited to the web root. Without `FTP_SERVER` the deploy job
+is skipped and only the build runs. Prefer `ftps`; plain `ftp` sends the password unencrypted.
+Manual alternative: `npm run build`, then upload the contents of `dist/`.
