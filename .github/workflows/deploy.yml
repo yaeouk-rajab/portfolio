@@ -56,3 +56,4 @@ jobs:
           protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
           server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
           local-dir: ./dist/
+          log-level: verbose
