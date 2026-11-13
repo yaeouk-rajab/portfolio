@@ -11,6 +11,7 @@ permissions:
 jobs:
   list:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       FTP_SERVER: ${{ secrets.FTP_SERVER }}
       FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -35,14 +36,15 @@ jobs:
             echo '```'
             lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<LFTP 2>&1
           $SSL
-          set net:max-retries 2
-          set net:timeout 20
+          set net:max-retries 1
+          set net:timeout 15
+          set ftp:passive-mode yes
           cd "$FTP_SERVER_DIR"
           pwd
           echo "--- top level ---"
           ls -la
-          echo "--- sizes, 2 levels deep (KB-aware) ---"
-          du -h --max-depth=2 .
+          echo "--- sizes, 1 level deep ---"
+          du -h --max-depth=1 .
           echo "--- total ---"
           du -sh .
           bye
