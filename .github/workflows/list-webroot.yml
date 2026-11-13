@@ -1,0 +1,51 @@
+name: List web root (read-only)
+
+# Manual only. Lists what is in the FTP web root and how big each item is.
+# It does not upload, change or delete anything.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR || './' }}
+      FTP_PROTOCOL: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+    steps:
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: List web root
+        run: |
+          set -u
+          if [ -z "$FTP_SERVER" ]; then echo "FTP_SERVER secret is not set"; exit 1; fi
+          if [ "$FTP_PROTOCOL" = "ftp" ]; then
+            SSL="set ftp:ssl-allow no"
+          else
+            SSL="set ftp:ssl-allow yes; set ftp:ssl-force yes"
+          fi
+          {
+            echo "## Web root listing (read-only)"
+            echo '```'
+            lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<LFTP 2>&1
+          $SSL
+          set net:max-retries 2
+          set net:timeout 20
+          cd "$FTP_SERVER_DIR"
+          pwd
+          echo "--- top level ---"
+          ls -la
+          echo "--- sizes, 2 levels deep (KB-aware) ---"
+          du -h --max-depth=2 .
+          echo "--- total ---"
+          du -sh .
+          bye
+          LFTP
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
