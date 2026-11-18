@@ -60,6 +60,8 @@ Content the owner must supply:
 
 The build is plain static files in `dist/`, so any static host works.
 
+For the actual day-to-day process right now (manual upload), see **DEPLOY.md**.
+
 - **Cloudflare Pages / Netlify / Vercel:** build command `npm run build`, output directory `dist`.
   Set `SITE_URL` to the production origin so canonical, OG and sitemap URLs are correct.
 - **GitHub Pages:** publish `dist/` with the `withastro/action` workflow. For a project page
