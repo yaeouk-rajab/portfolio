@@ -293,12 +293,12 @@
   .skip-link {
     display: none !important;
   }
+  /* Links stay real hyperlinks in the PDF. Show them as underlined blue text,
+     without printing the URL next to them. */
   .resume a {
-    text-decoration: none !important;
-  }
-  .resume a[href^="http"]::after {
-    content: " (" attr(href) ")";
-    font-size: 0.85em;
+    color: #0b4fb3 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px;
   }
   .resume {
     font-size: 9.5pt;

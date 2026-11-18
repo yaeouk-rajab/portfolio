@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { projects, templates, techForCategory } from '../lib/content';
 import { site } from '../data/site';
 
-const github = site.social.find((s) => s.label === 'GitHub');
+const headerLinks = site.social.filter((s) => s.enabled && ['GitHub', 'LinkedIn'].includes(s.label));
 const categories = [
   { key: 'web', label: 'Web' },
   { key: 'mobile', label: 'Mobile' },
@@ -28,12 +28,12 @@ const categories = [
         <a class="link" href={`mailto:${site.emailSecondary}`}>{site.emailSecondary}</a>
         {' · '}
         <a class="link" href={site.phoneHref}>{site.phone}</a>
-        {github?.enabled && (
+        {headerLinks.map((l) => (
           <>
             {' · '}
-            <a class="link" href={github.url} rel="me noopener">github.com/{site.githubUser}</a>
+            <a class="link" href={l.url} rel="me noopener">{l.label}</a>
           </>
-        )}
+        ))}
       </p>
     </header>
 
@@ -68,7 +68,7 @@ const categories = [
             </h3>
             <p class="mt-1 text-sm">{w.text}</p>
             {w.url && (
-              <p class="mt-1 text-xs"><a class="link" href={w.url} rel="noopener" target="_blank">{w.url}</a></p>
+              <p class="mt-1 text-xs"><a class="link" href={w.url} rel="noopener" target="_blank">{new URL(w.url).hostname === 'play.google.com' ? 'View on Google Play' : 'Visit site'}</a></p>
             )}
           </li>
         ))}
@@ -86,7 +86,7 @@ const categories = [
       <h2 id="award-heading" class="prompt text-xl">Award</h2>
       <p class="mt-4 text-sm">
         {site.award.title}.{' '}
-        <a class="link text-xs" href={site.award.url} rel="noopener" target="_blank">{site.award.url}</a>
+        <a class="link text-xs" href={site.award.url} rel="noopener" target="_blank">IMO participant page</a>
       </p>
     </section>
 
@@ -120,13 +120,10 @@ const categories = [
         {projects.map((p) => (
           <li>
             <h3 class="font-semibold">
-              {p.name} <span class="font-normal text-muted">({p.category})</span>
+              <a class="link" href={p.repoUrl} rel="noopener noreferrer" target="_blank">{p.name}</a> <span class="font-normal text-muted">({p.category})</span>
             </h3>
             <p class="mt-1 text-sm">{p.tagline}</p>
             <p class="mt-1 text-xs text-muted">{p.stack.join(', ')}</p>
-            <p class="mt-1 text-xs print-hide">
-              <a class="link" href={p.repoUrl} rel="noopener noreferrer" target="_blank">{p.repoUrl}</a>
-            </p>
           </li>
         ))}
       </ul>
@@ -138,7 +135,7 @@ const categories = [
         {templates.map((t) => (
           <li>
             <h3 class="font-semibold">
-              {t.name} <span class="font-normal text-muted">({t.platform})</span>
+              <a class="link" href={t.repoUrl} rel="noopener noreferrer" target="_blank">{t.name}</a> <span class="font-normal text-muted">({t.platform})</span>
             </h3>
             <p class="mt-1 text-sm print-hide">{t.description}</p>
             <p class="mt-1 text-xs text-muted">{t.stack.join(', ')}</p>
