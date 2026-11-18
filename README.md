@@ -68,7 +68,7 @@ For the actual day-to-day process right now (manual upload), see **DEPLOY.md**.
   (not a user/custom-domain root) also set `base` in `astro.config.mjs`.
 - `robots.txt`, `sitemap-index.xml` and `rss.xml` are generated at build time from `site`.
 
-## Deploy (FTP via GitHub Actions)
+## Deploy (FTP via GitHub Actions) — currently on hold, see DEPLOY.md
 
 `.github/workflows/deploy.yml` type-checks and builds on every push and pull request,
 and on pushes to `main` uploads `dist/` to your host over FTP. Only changed files are
