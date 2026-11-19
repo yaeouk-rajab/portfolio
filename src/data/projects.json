@@ -73,7 +73,41 @@
         ]
       }
     ],
-    "status": "Private commercial project, not deployed publicly. Built across 40 documented sessions; no real Stripe or email/SMS provider has been used (test mode and log mailer only). The README is stale; CHANGELOG and the session handoff are current."
+    "status": "Private commercial project, not deployed publicly. Built across 40 documented sessions; no real Stripe or email/SMS provider has been used (test mode and log mailer only). The README is stale; CHANGELOG and the session handoff are current.",
+    "license": "Proprietary \u2014 portfolio showcase, source visible but all rights reserved",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
+    ],
+    "changelogUrl": "https://github.com/yaeouk-rajab/bookslot/blob/main/CHANGELOG.md",
+    "screenshots": [
+      {
+        "src": "/screenshots/bookslot/public-booking.png",
+        "alt": "bookslot public booking page showing a service, its duration and price, with a Select button",
+        "caption": "Public booking page",
+        "width": 1770,
+        "height": 960
+      },
+      {
+        "src": "/screenshots/bookslot/owner-services.png",
+        "alt": "bookslot owner dashboard listing services with prices and durations",
+        "width": 1770,
+        "height": 960
+      },
+      {
+        "src": "/screenshots/bookslot/owner-availability.png",
+        "alt": "bookslot owner dashboard for setting weekly working hours",
+        "width": 1770,
+        "height": 960
+      },
+      {
+        "src": "/screenshots/bookslot/owner-appointments.png",
+        "alt": "bookslot owner dashboard listing upcoming appointments",
+        "width": 1770,
+        "height": 960
+      }
+    ]
   },
   {
     "slug": "bookslot-mobile",
@@ -137,7 +171,13 @@
         "connectsTo": []
       }
     ],
-    "status": "Public demo client, MIT licensed. Unit and widget tests run in CI; the emulator integration test is not part of the default CI run."
+    "status": "Public demo client, MIT licensed. Unit and widget tests run in CI; the emulator integration test is not part of the default CI run.",
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
+    ]
   },
   {
     "slug": "pulsewatch",
@@ -219,7 +259,15 @@
         "connectsTo": []
       }
     ],
-    "status": "Session 22 complete, per the README. Real FCM/APNs delivery is permanently descoped (no live credentials) and Terraform on a real cloud is unverified. AGPL-3.0."
+    "status": "Session 22 complete, per the README. Real FCM/APNs delivery is permanently descoped (no live credentials) and Terraform on a real cloud is unverified. AGPL-3.0.",
+    "license": "AGPL-3.0",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "npm audit",
+      "osv-scanner"
+    ],
+    "changelogUrl": "https://github.com/yaeouk-rajab/pulsewatch/blob/main/CHANGELOG.md"
   },
   {
     "slug": "pulsewatch-mobile",
@@ -277,7 +325,13 @@
         "connectsTo": []
       }
     ],
-    "status": "Companion client with CI. Self-hosted server URL entered on first launch. AGPL-3.0."
+    "status": "Companion client with CI. Self-hosted server URL entered on first launch. AGPL-3.0.",
+    "license": "AGPL-3.0",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "npm audit"
+    ]
   },
   {
     "slug": "notifyhub",
@@ -358,7 +412,15 @@
         "connectsTo": []
       }
     ],
-    "status": "Complete and documented in project memory. Real APNs credentials are deliberately never present, so the APNs path is tested but not delivered to a device. MIT."
+    "status": "Complete and documented in project memory. Real APNs credentials are deliberately never present, so the APNs path is tested but not delivered to a device. MIT.",
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "dependency-review",
+      "gitleaks",
+      "npm audit",
+      "osv-scanner"
+    ]
   },
   {
     "slug": "notifyhub-ios",
@@ -423,7 +485,14 @@
         "connectsTo": []
       }
     ],
-    "status": "Complete. Written without a Swift compiler in the authoring sandbox, so CI on macOS is the only compile check. Real APNs delivery to a physical device is a permanent unverified limit. MIT."
+    "status": "Complete. Written without a Swift compiler in the authoring sandbox, so CI on macOS is the only compile check. Real APNs delivery to a physical device is a permanent unverified limit. MIT.",
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "dependency-review",
+      "gitleaks",
+      "osv-scanner"
+    ]
   },
   {
     "slug": "flexcatalog",
@@ -494,7 +563,21 @@
         "connectsTo": []
       }
     ],
-    "status": "Complete skill demo with seeded demo tenants. MIT. The README does not state a release tag."
+    "status": "Complete skill demo with seeded demo tenants. MIT. The README does not state a release tag.",
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks"
+    ],
+    "screenshots": [
+      {
+        "src": "/screenshots/flexcatalog/faceted-search.png",
+        "alt": "Terminal output of login and a faceted product search request against a running FlexCatalog instance",
+        "caption": "Real API output captured in CI, not a UI screenshot",
+        "width": 1500,
+        "height": 1704
+      }
+    ]
   },
   {
     "slug": "lexicon",
@@ -564,7 +647,16 @@
         "connectsTo": []
       }
     ],
-    "status": "v1.0.0 tagged, AGPL-3.0. Real LLM verification is permanently descoped, so answer quality has not been measured against a real model."
+    "status": "v1.0.0 tagged, AGPL-3.0. Real LLM verification is permanently descoped, so answer quality has not been measured against a real model.",
+    "license": "AGPL-3.0",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "npm audit",
+      "osv-scanner",
+      "pip-audit"
+    ],
+    "changelogUrl": "https://github.com/yaeouk-rajab/lexicon/blob/main/CHANGELOG.md"
   },
   {
     "slug": "lexicon-android",
@@ -636,7 +728,21 @@
         "connectsTo": []
       }
     ],
-    "status": "Scaffolded without Android SDK access, so the README states it was not compiled locally; CI is the build evidence. MIT."
+    "status": "Scaffolded without Android SDK access, so the README states it was not compiled locally; CI is the build evidence. MIT.",
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
+    ],
+    "screenshots": [
+      {
+        "src": "/screenshots/lexicon-android/launch.png",
+        "alt": "lexicon-android onboarding screen asking for a deployment URL and auth header",
+        "width": 320,
+        "height": 640
+      }
+    ]
   },
   {
     "slug": "enterprise-app",
@@ -694,7 +800,13 @@
         ]
       }
     ],
-    "status": "Complete demo with seeded accounts. MIT. Docker-based verification relies on CI because the authoring sandbox blocked registries."
+    "status": "Complete demo with seeded accounts. MIT. Docker-based verification relies on CI because the authoring sandbox blocked registries.",
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
+    ]
   },
   {
     "slug": "privacy-forge",
@@ -773,7 +885,14 @@
         "connectsTo": []
       }
     ],
-    "status": "v1.0.0 tagged. Browser-driven end-to-end tests hang on Docker-launched Chromium on the authoring host (R-08, accepted); the UI was verified by an HTTP walkthrough and real screenshots."
+    "status": "v1.0.0 tagged. Browser-driven end-to-end tests hang on Docker-launched Chromium on the authoring host (R-08, accepted); the UI was verified by an HTTP walkthrough and real screenshots.",
+    "license": "AGPL-3.0",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
+    ],
+    "changelogUrl": "https://github.com/yaeouk-rajab/privacy-forge/blob/main/CHANGELOG.md"
   },
   {
     "slug": "laravel-consent-guard",
@@ -839,6 +958,12 @@
         ]
       }
     ],
-    "status": "v1.0.0 released 2026-08-23. Not yet published on Packagist; the README says so. MIT."
+    "status": "v1.0.0 released 2026-08-23. Not yet published on Packagist; the README says so. MIT.",
+    "license": "MIT",
+    "ciSecurity": [
+      "gitleaks",
+      "osv-scanner"
+    ],
+    "changelogUrl": "https://github.com/yaeouk-rajab/laravel-consent-guard/blob/main/CHANGELOG.md"
   }
 ]

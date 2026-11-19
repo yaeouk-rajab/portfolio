@@ -8,6 +8,14 @@ export interface ArchitectureNode {
   connectsTo: string[];
 }
 
+export interface Screenshot {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  caption?: string;
+}
+
 export interface Project {
   slug: string;
   name: string;
@@ -21,6 +29,14 @@ export interface Project {
   repoUrl: string;
   architecture: ArchitectureNode[];
   status: string;
+  /** SPDX id, or a short description for a non-open-source repo. From the repo's own LICENSE file. */
+  license?: string;
+  /** Security scanning tools actually run in the repo's CI workflows (not claimed, grepped from the YAML). */
+  ciSecurity?: string[];
+  /** Link to the repo's own CHANGELOG.md, only when one exists. */
+  changelogUrl?: string;
+  /** Real screenshots or captured output committed in the repo's docs/screenshots, not mockups. */
+  screenshots?: Screenshot[];
 }
 
 export interface Template {
