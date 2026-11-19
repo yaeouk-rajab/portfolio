@@ -72,6 +72,26 @@ const github = site.social.find((s) => s.label === 'GitHub');
     </div>
   </Section>
 
+  <!-- Shipped work -->
+  <Section id="shipped" path="~/shipped" command="ls --in-production">
+    <ul class="grid gap-4 md:max-w-xl">
+      {site.shippedWork.map((w) => (
+        <li class="rounded-lg border border-line bg-surface p-5">
+          <h3 class="font-mono font-semibold">{w.name}</h3>
+          <p class="text-xs text-muted">{w.kind}</p>
+          <p class="mt-2 text-sm">{w.text}</p>
+          {w.url && (
+            <p class="mt-3 text-sm">
+              <a class="link" href={w.url} rel="noopener" target="_blank">
+                {w.linkLabel}<span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            </p>
+          )}
+        </li>
+      ))}
+    </ul>
+  </Section>
+
   <!-- Featured projects -->
   <Section id="projects" path="~/projects" command="ls --featured">
     <a slot="action" href="/projects" class="link font-mono text-sm">All {projects.length} projects &rarr;</a>
