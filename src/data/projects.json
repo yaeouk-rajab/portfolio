@@ -267,7 +267,14 @@
       "npm audit",
       "osv-scanner"
     ],
-    "changelogUrl": "https://github.com/yaeouk-rajab/pulsewatch/blob/main/CHANGELOG.md"
+    "changelogUrl": "https://github.com/yaeouk-rajab/pulsewatch/blob/main/CHANGELOG.md",
+    "decisions": [
+      {
+        "title": "Restart-safe, exactly-once scheduling via Postgres row leasing",
+        "text": "A target's own slow check and a full process restart are two different race conditions that needed one mechanism to close, not two. Each target row is leased with an expiry tied to its own check timeout; a crash leaves an abandoned lease that self-heals on the next tick, with no separate recovery path to get wrong.",
+        "url": "https://github.com/yaeouk-rajab/pulsewatch/blob/main/docs/adr/ADR-0001-scheduler-restart-safety-leasing.md"
+      }
+    ]
   },
   {
     "slug": "pulsewatch-mobile",
@@ -429,6 +436,13 @@
         "height": 984,
         "caption": "Real API output captured from a running instance, not a mockup"
       }
+    ],
+    "decisions": [
+      {
+        "title": "A raw HTTP/2 APNs client, verified without ever holding real Apple credentials",
+        "text": "Apple's push API is implemented directly on Node's http2 module rather than adding a dependency. Because http2.connect() picks plaintext or TLS purely from the URL scheme, the test suite runs the identical client against a real local HTTP/2 server, not a mock, while production points the same code at Apple's real endpoint.",
+        "url": "https://github.com/yaeouk-rajab/notifyhub/blob/main/docs/project-memory/07-decisions.md"
+      }
     ]
   },
   {
@@ -586,6 +600,13 @@
         "width": 1500,
         "height": 1704
       }
+    ],
+    "decisions": [
+      {
+        "title": "Durable consumers added without touching the publish path",
+        "text": "Subscribers switched to NATS JetStream durable consumers while the publisher kept using plain core NATS, completely unchanged \u2014 a config-level upgrade on top of the same publish/subscribe code rather than a rewrite, which is exactly the upgrade path the original event-streaming decision had already set up for.",
+        "url": "https://github.com/yaeouk-rajab/flexcatalog/blob/main/docs/project-memory/decisions/0008-jetstream-consumer-durability.md"
+      }
     ]
   },
   {
@@ -665,7 +686,14 @@
       "osv-scanner",
       "pip-audit"
     ],
-    "changelogUrl": "https://github.com/yaeouk-rajab/lexicon/blob/main/CHANGELOG.md"
+    "changelogUrl": "https://github.com/yaeouk-rajab/lexicon/blob/main/CHANGELOG.md",
+    "decisions": [
+      {
+        "title": "Refusal is enforced by a second LLM call, not a similarity threshold",
+        "text": "A feasibility spike measured that retrieval similarity alone can't separate \"topically close but wrong\" from \"actually correct\" (0.701 for a wrong answer, inside the 0.706\u20130.848 range of correct ones). The system now generates an answer with mandatory citations, then runs an independent verification call against the cited passages, and only returns the answer if every claim verifies.",
+        "url": "https://github.com/yaeouk-rajab/lexicon/blob/main/docs/adr/ADR-0001-groundedness-refusal-check.md"
+      }
+    ]
   },
   {
     "slug": "lexicon-android",
@@ -841,6 +869,13 @@
         "width": 1800,
         "height": 960
       }
+    ],
+    "decisions": [
+      {
+        "title": "Read access scoped to match write access that was already scoped",
+        "text": "Write actions were already correctly restricted by role, but the requisition and purchase-order list endpoints returned every row to any authenticated user. A single ReadScopePolicy now applies one three-tier rule \u2014 org-wide roles see everything, department managers see their department, everyone else sees only their own \u2014 implemented once and reused by both services rather than duplicated.",
+        "url": "https://github.com/yaeouk-rajab/enterprise-app/blob/main/docs/project-memory/adr/0005-row-level-read-scoping.md"
+      }
     ]
   },
   {
@@ -927,7 +962,14 @@
       "gitleaks",
       "osv-scanner"
     ],
-    "changelogUrl": "https://github.com/yaeouk-rajab/privacy-forge/blob/main/CHANGELOG.md"
+    "changelogUrl": "https://github.com/yaeouk-rajab/privacy-forge/blob/main/CHANGELOG.md",
+    "decisions": [
+      {
+        "title": "The policy evaluator fails closed, and records why",
+        "text": "A missing policy, a malformed condition, an evaluation exception and a database timeout all resolve to deny, never allow. Every fail-closed denial is written to the audit log with its own reason code (e.g. policy_missing, evaluation_error), so an operator can tell \"denied by design\" apart from \"the evaluator itself is broken.\"",
+        "url": "https://github.com/yaeouk-rajab/privacy-forge/blob/main/docs/adr/ADR-0006-policy-evaluator-fail-closed.md"
+      }
+    ]
   },
   {
     "slug": "laravel-consent-guard",
@@ -1007,6 +1049,13 @@
         "width": 1500,
         "height": 1830,
         "caption": "Real test run output, not a mockup"
+      }
+    ],
+    "decisions": [
+      {
+        "title": "Every ambiguous consent state resolves to \"not granted\"",
+        "text": "No record, a withdrawn record, an expired record, and a database error during the lookup itself all produce the same answer: not granted. One method is the single choke point every other part of the package calls through, so the rule can't be silently bypassed by a re-implementation elsewhere.",
+        "url": "https://github.com/yaeouk-rajab/laravel-consent-guard/blob/main/docs/adr/0002-consent-guard-fail-closed.md"
       }
     ]
   }

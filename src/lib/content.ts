@@ -37,6 +37,8 @@ export interface Project {
   changelogUrl?: string;
   /** Real screenshots or captured output committed in the repo's docs/screenshots, not mockups. */
   screenshots?: Screenshot[];
+  /** One or two genuinely interesting engineering decisions, drawn from the repo's own ADR/decision log. */
+  decisions?: { title: string; text: string; url: string }[];
 }
 
 export interface Template {
