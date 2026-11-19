@@ -59,7 +59,7 @@ export const site = {
   ] satisfies SocialLink[],
 
   summary:
-    'Software developer working with JavaScript, PHP, HTML, CSS and Dart, and with Flutter, React JS and Laravel. Currently learning web application security: defense-in-depth and secure coding. Strengths: rapid learning, problem solving and maintainable code.',
+    'Software developer working across web, mobile and backend, with languages including JavaScript, PHP, HTML, CSS and Dart. Currently learning web application security: defense-in-depth and secure coding. Strengths: rapid learning, problem solving and maintainable code.',
   education: [
     { title: 'IT student', place: 'Syrian Virtual University', period: 'Starting 2026' },
   ],
