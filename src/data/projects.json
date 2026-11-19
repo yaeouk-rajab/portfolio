@@ -420,6 +420,15 @@
       "gitleaks",
       "npm audit",
       "osv-scanner"
+    ],
+    "screenshots": [
+      {
+        "src": "/screenshots/notifyhub/subscription.png",
+        "alt": "Terminal transcript of registering, creating a channel, subscribing over WebSocket and publishing a notification against a running NotifyHub instance",
+        "width": 1500,
+        "height": 984,
+        "caption": "Real API output captured from a running instance, not a mockup"
+      }
     ]
   },
   {
@@ -806,6 +815,32 @@
       "CodeQL",
       "gitleaks",
       "osv-scanner"
+    ],
+    "screenshots": [
+      {
+        "src": "/screenshots/enterprise-app/dashboard.png",
+        "alt": "ProcureFlow dashboard showing requisitions awaiting approval",
+        "width": 1800,
+        "height": 960
+      },
+      {
+        "src": "/screenshots/enterprise-app/requisition-detail.png",
+        "alt": "ProcureFlow requisition detail page with line items and a multi-step approval chain",
+        "width": 1800,
+        "height": 960
+      },
+      {
+        "src": "/screenshots/enterprise-app/vendors.png",
+        "alt": "ProcureFlow vendor list with active and pending-approval statuses",
+        "width": 1800,
+        "height": 960
+      },
+      {
+        "src": "/screenshots/enterprise-app/catalog.png",
+        "alt": "ProcureFlow product catalog grouped by vendor and category",
+        "width": 1800,
+        "height": 960
+      }
     ]
   },
   {
@@ -964,6 +999,15 @@
       "gitleaks",
       "osv-scanner"
     ],
-    "changelogUrl": "https://github.com/yaeouk-rajab/laravel-consent-guard/blob/main/CHANGELOG.md"
+    "changelogUrl": "https://github.com/yaeouk-rajab/laravel-consent-guard/blob/main/CHANGELOG.md",
+    "screenshots": [
+      {
+        "src": "/screenshots/laravel-consent-guard/tests.png",
+        "alt": "Terminal transcript of the Pest test suite passing against PostgreSQL: 42 tests, 103 assertions",
+        "width": 1500,
+        "height": 1830,
+        "caption": "Real test run output, not a mockup"
+      }
+    ]
   }
 ]
