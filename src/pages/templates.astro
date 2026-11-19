@@ -37,6 +37,20 @@ const options = platforms
                   {t.notableFeatures.map((f) => <li>{f}</li>)}
                 </ul>
               </div>
+              {(t.license || t.ciSecurity) && (
+                <dl class="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-muted">
+                  {t.license && (
+                    <div class="flex gap-1.5">
+                      <dt>License:</dt><dd class="text-text">{t.license}</dd>
+                    </div>
+                  )}
+                  {t.ciSecurity && t.ciSecurity.length > 0 && (
+                    <div class="flex gap-1.5">
+                      <dt>CI security:</dt><dd class="text-text">{t.ciSecurity.join(', ')}</dd>
+                    </div>
+                  )}
+                </dl>
+              )}
               <p class="mt-auto pt-1">
                 <a href={t.repoUrl} rel="noopener noreferrer" target="_blank" class="link inline-flex min-h-11 items-center font-mono text-sm">
                   GitHub repo<span class="sr-only"> for {t.name} (opens in a new tab)</span>&nbsp;&#8599;

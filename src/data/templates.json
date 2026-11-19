@@ -17,6 +17,12 @@
       "Offline queue with a permanent vs transient HTTP error split (401/403/422 never retried) and an attempt cap.",
       "Hand-rolled composition root, Keystore-encrypted prefs for the auth header, and BASIC-only OkHttp logging.",
       "Shared composables, connectivity banner and ktlint in CI."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
     ]
   },
   {
@@ -36,6 +42,12 @@
       "Startup guard refuses the dev placeholder JWT secret in Production; login is rate limited and uses one error for unknown user and wrong password.",
       "Query-building logic is internal and unit-testable as BsonDocument construction without a database.",
       "Optional tenancy and background worker folders, with Dockerfiles for the API and the worker."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "NuGet vulnerability scan"
     ]
   },
   {
@@ -55,6 +67,11 @@
       "GraphQL client and graphql-transport-ws subscription client on URLSession with no third-party Swift dependencies.",
       "Keychain token storage, sign-in and register, and APNs registration with permission problems surfaced to the user.",
       "Deep-link coordinator for push taps in all app states; project generated from project.yml and CI runs on macOS."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks"
     ]
   },
   {
@@ -75,6 +92,13 @@
       "JWT access tokens plus revocable refresh tokens, optional OIDC SSO with Keycloak for local development.",
       "Shared Angular UI component set with server-side field errors, and a rename.sh that swaps placeholders then deletes itself.",
       "CI with secret scanning, CodeQL and dependency scanning; Spotless formatting enforced."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "dependency-review",
+      "gitleaks",
+      "osv-scanner"
     ]
   },
   {
@@ -94,6 +118,12 @@
       "Auth state machine (bootstrapping, needs-server, signed-out, signed-in) with a user-supplied server URL.",
       "Native FCM/APNs token registration on sign-in and tap-to-navigate for pushes carrying an in-app route.",
       "CI also runs expo export for both platforms and an npm audit script with a dated allowlist."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "npm audit"
     ]
   },
   {
@@ -114,6 +144,14 @@
       "Single error contract for every failure, with per-field validation errors keyed by name; pagination helper that rejects bad values.",
       "Constant-work login against a dummy hash, Redis-backed login and register rate limits, and a two-role Postgres setup.",
       "Browser never calls the backend directly: Next.js route handlers proxy using the session cookie."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "npm audit",
+      "osv-scanner",
+      "pip-audit"
     ]
   },
   {
@@ -134,6 +172,13 @@
       "HMAC-signed session cookie auth, CSRF-style JSON content-type check and per-email and per-IP login limiter.",
       "Pagination helper, agent credential helper and golang-migrate migrations; tests run with a real Postgres.",
       "Optional Kubernetes, Terraform and Lambda example folders, plus Svelte 5 runes and Vitest component tests."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "npm audit",
+      "osv-scanner"
     ]
   },
   {
@@ -153,6 +198,12 @@
       "Typed ApiException client, Keychain/Keystore token storage and build-time config through --dart-define.",
       "Fake secure storage and fake reminder scheduler for plain flutter_test runs.",
       "Emulator checks: reminder delivery test and a reboot-survival script using a probe APK; CI runs analyze and format."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
     ]
   },
   {
@@ -173,6 +224,12 @@
       "Sanctum SPA cookie auth with explicit-origin CORS and a runtime/migrator Postgres role split.",
       "Optional multi-tenancy module with Row-Level Security and an optional RabbitMQ queue module with delayed delivery.",
       "Pest, Larastan level 8, Vitest and Playwright specs against the real API, with security scanning in CI."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
     ]
   },
   {
@@ -193,6 +250,12 @@
       "Rate-limited login with session regeneration and exponential lockout; one JSON error contract and Inertia error pages.",
       "Separate Vite build for a standalone embeddable widget that imports no Inertia or Laravel assets.",
       "Runtime/migrator Postgres roles, dev and production Docker, Larastan level 8 and Vitest."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "gitleaks",
+      "osv-scanner"
     ]
   },
   {
@@ -213,6 +276,13 @@
       "Depends on individual illuminate components and CI tests every supported PHP and Laravel combination.",
       "Uses publishesMigrations(), a rebindable repository contract and an install command; composer.lock is intentionally not committed.",
       "composer check runs Pint, Larastan and Pest; rename.sh swaps the placeholders."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "composer audit",
+      "gitleaks",
+      "osv-scanner"
     ]
   },
   {
@@ -233,6 +303,14 @@
       "Zod-validated environment, Helmet, rate-limited /graphql, and a WebSocket upgrade rate limiter with a connection cap.",
       "WebSocket server built with noServer and a manual upgrade handler to avoid a shutdown double-close.",
       "Multi-stage non-root Dockerfile, CI with CodeQL and security scans, and tests against a real PostgreSQL."
+    ],
+    "license": "MIT",
+    "ciSecurity": [
+      "CodeQL",
+      "dependency-review",
+      "gitleaks",
+      "npm audit",
+      "osv-scanner"
     ]
   }
 ]

@@ -83,26 +83,26 @@
     "changelogUrl": "https://github.com/yaeouk-rajab/bookslot/blob/main/CHANGELOG.md",
     "screenshots": [
       {
-        "src": "/screenshots/bookslot/public-booking.png",
+        "src": "/screenshots/bookslot/public-booking.webp",
         "alt": "bookslot public booking page showing a service, its duration and price, with a Select button",
         "caption": "Public booking page",
         "width": 1770,
         "height": 960
       },
       {
-        "src": "/screenshots/bookslot/owner-services.png",
+        "src": "/screenshots/bookslot/owner-services.webp",
         "alt": "bookslot owner dashboard listing services with prices and durations",
         "width": 1770,
         "height": 960
       },
       {
-        "src": "/screenshots/bookslot/owner-availability.png",
+        "src": "/screenshots/bookslot/owner-availability.webp",
         "alt": "bookslot owner dashboard for setting weekly working hours",
         "width": 1770,
         "height": 960
       },
       {
-        "src": "/screenshots/bookslot/owner-appointments.png",
+        "src": "/screenshots/bookslot/owner-appointments.webp",
         "alt": "bookslot owner dashboard listing upcoming appointments",
         "width": 1770,
         "height": 960
@@ -423,7 +423,7 @@
     ],
     "screenshots": [
       {
-        "src": "/screenshots/notifyhub/subscription.png",
+        "src": "/screenshots/notifyhub/subscription.webp",
         "alt": "Terminal transcript of registering, creating a channel, subscribing over WebSocket and publishing a notification against a running NotifyHub instance",
         "width": 1500,
         "height": 984,
@@ -580,7 +580,7 @@
     ],
     "screenshots": [
       {
-        "src": "/screenshots/flexcatalog/faceted-search.png",
+        "src": "/screenshots/flexcatalog/faceted-search.webp",
         "alt": "Terminal output of login and a faceted product search request against a running FlexCatalog instance",
         "caption": "Real API output captured in CI, not a UI screenshot",
         "width": 1500,
@@ -746,7 +746,7 @@
     ],
     "screenshots": [
       {
-        "src": "/screenshots/lexicon-android/launch.png",
+        "src": "/screenshots/lexicon-android/launch.webp",
         "alt": "lexicon-android onboarding screen asking for a deployment URL and auth header",
         "width": 320,
         "height": 640
@@ -818,25 +818,25 @@
     ],
     "screenshots": [
       {
-        "src": "/screenshots/enterprise-app/dashboard.png",
+        "src": "/screenshots/enterprise-app/dashboard.webp",
         "alt": "ProcureFlow dashboard showing requisitions awaiting approval",
         "width": 1800,
         "height": 960
       },
       {
-        "src": "/screenshots/enterprise-app/requisition-detail.png",
+        "src": "/screenshots/enterprise-app/requisition-detail.webp",
         "alt": "ProcureFlow requisition detail page with line items and a multi-step approval chain",
         "width": 1800,
         "height": 960
       },
       {
-        "src": "/screenshots/enterprise-app/vendors.png",
+        "src": "/screenshots/enterprise-app/vendors.webp",
         "alt": "ProcureFlow vendor list with active and pending-approval statuses",
         "width": 1800,
         "height": 960
       },
       {
-        "src": "/screenshots/enterprise-app/catalog.png",
+        "src": "/screenshots/enterprise-app/catalog.webp",
         "alt": "ProcureFlow product catalog grouped by vendor and category",
         "width": 1800,
         "height": 960
@@ -1002,7 +1002,7 @@
     "changelogUrl": "https://github.com/yaeouk-rajab/laravel-consent-guard/blob/main/CHANGELOG.md",
     "screenshots": [
       {
-        "src": "/screenshots/laravel-consent-guard/tests.png",
+        "src": "/screenshots/laravel-consent-guard/tests.webp",
         "alt": "Terminal transcript of the Pest test suite passing against PostgreSQL: 42 tests, 103 assertions",
         "width": 1500,
         "height": 1830,

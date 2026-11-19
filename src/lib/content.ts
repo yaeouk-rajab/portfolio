@@ -47,6 +47,10 @@ export interface Template {
   platform: 'web' | 'mobile' | 'backend' | 'library';
   repoUrl: string;
   notableFeatures: string[];
+  /** SPDX id. From the repo's own LICENSE file. */
+  license?: string;
+  /** Security scanning tools actually run in the repo's CI workflows. */
+  ciSecurity?: string[];
 }
 
 export const projects = projectsJson as Project[];
