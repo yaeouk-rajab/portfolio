@@ -55,7 +55,7 @@ export const site = {
     { label: 'WhatsApp', url: 'https://wa.me/963962296144', enabled: true },
     { label: 'dev.to', url: 'https://dev.to/yaeouk', enabled: true },
     // Hidden until a URL is filled in and enabled is set to true.
-    { label: 'X', url: '', enabled: false },
+    { label: 'X', url: 'https://x.com/ARajabdeveloper', enabled: true },
   ] satisfies SocialLink[],
 
   summary:
